@@ -6,7 +6,7 @@ import (
 )
 
 type Ctx struct {
-	c7t, id string
+	component, subject, id string
 
 	mux sync.Mutex
 	log []tuple
@@ -18,18 +18,22 @@ func NewCtx() *Ctx {
 	return &ctx
 }
 
-func (c *Ctx) SetID(component, id string) {
-	c.c7t, c.id = component, id
+func (c *Ctx) SetComponent(component string) Interface {
+	c.component = component
+	return c
 }
 
-func (c *Ctx) BeginTXN() Interface {
-	c.Reset()
+func (c *Ctx) SetID(id string) Interface {
+	c.id = id
+	return c
+}
+
+func (c *Ctx) Subject(subject string) Interface {
+	c.subject = subject
 	return c
 }
 
 func (c *Ctx) Log(key string, val interface{}) Interface {
-	c.mux.Lock()
-	defer c.mux.Unlock()
 	if c.ll < len(c.log) {
 		c.log[c.ll].t = time.Now()
 		c.log[c.ll].k = key
@@ -44,14 +48,17 @@ func (c *Ctx) Log(key string, val interface{}) Interface {
 	return c
 }
 
-func (c *Ctx) Commit() error {
-	// ...
+func (c *Ctx) Push() error {
 	return nil
 }
 
-func (c *Ctx) CommitTo(bc Broadcaster) error {
-	// ...
-	c.Reset()
+func (c *Ctx) BeginTXN() Interface {
+	c.mux.Lock()
+	return c
+}
+
+func (c *Ctx) Commit() error {
+	c.mux.Unlock()
 	return nil
 }
 
@@ -60,5 +67,6 @@ func (c *Ctx) Reset() *Ctx {
 		c.log[i].k = ""
 		c.log[i].v = nil
 	}
+	c.ll = 0
 	return c
 }

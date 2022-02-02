@@ -9,7 +9,7 @@ type Ctx struct {
 	component, subject, id string
 
 	mux sync.Mutex
-	log []tuple
+	log []entry
 	ll  int
 }
 
@@ -35,14 +35,14 @@ func (c *Ctx) Subject(subject string) Interface {
 
 func (c *Ctx) Log(key string, val interface{}) Interface {
 	if c.ll < len(c.log) {
-		c.log[c.ll].t = time.Now()
+		c.log[c.ll].tt = time.Now()
 		c.log[c.ll].k = key
 		c.log[c.ll].v = val
 	} else {
-		c.log = append(c.log, tuple{
-			t: time.Now(),
-			k: key,
-			v: val,
+		c.log = append(c.log, entry{
+			tt: time.Now(),
+			k:  key,
+			v:  val,
 		})
 	}
 	return c

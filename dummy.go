@@ -2,11 +2,10 @@ package traceID
 
 type DummyCtx struct{}
 
-func (d DummyCtx) BeginTXN() Interface                 { return d }
-func (d DummyCtx) Add(interface{}) Interface           { return d }
-func (d DummyCtx) AddKV(string, interface{}) Interface { return d }
-func (d DummyCtx) Commit() error                       { return nil }
-func (d DummyCtx) CommitTo(Broadcaster) error          { return nil }
+func (d DummyCtx) BeginTXN() Interface               { return d }
+func (d DummyCtx) Log(string, interface{}) Interface { return d }
+func (d DummyCtx) Commit() error                     { return nil }
+func (d DummyCtx) CommitTo(Broadcaster) error        { return nil }
 
 type DummyBroadcast struct{}
 

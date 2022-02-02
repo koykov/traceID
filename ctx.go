@@ -1,14 +1,16 @@
 package traceID
 
-type Ctx struct {
-	id   string
-	buf  []kv
-	bufl uint
-}
+import (
+	"sync"
+	"time"
+)
 
-type kv struct {
-	key string
-	val interface{}
+type Ctx struct {
+	c7t, id string
+
+	mux sync.Mutex
+	log []tuple
+	ll  int
 }
 
 func NewCtx() *Ctx {
@@ -16,8 +18,8 @@ func NewCtx() *Ctx {
 	return &ctx
 }
 
-func (c *Ctx) SetID(id string) {
-	c.id = id
+func (c *Ctx) SetID(component, id string) {
+	c.c7t, c.id = component, id
 }
 
 func (c *Ctx) BeginTXN() Interface {
@@ -25,12 +27,20 @@ func (c *Ctx) BeginTXN() Interface {
 	return c
 }
 
-func (c *Ctx) Add(val interface{}) Interface {
-	return c.AddKV("", val)
-}
-
-func (c *Ctx) AddKV(key string, val interface{}) Interface {
-	c.buf = append(c.buf, kv{key: key, val: val})
+func (c *Ctx) Log(key string, val interface{}) Interface {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+	if c.ll < len(c.log) {
+		c.log[c.ll].t = time.Now()
+		c.log[c.ll].k = key
+		c.log[c.ll].v = val
+	} else {
+		c.log = append(c.log, tuple{
+			t: time.Now(),
+			k: key,
+			v: val,
+		})
+	}
 	return c
 }
 
@@ -46,6 +56,9 @@ func (c *Ctx) CommitTo(bc Broadcaster) error {
 }
 
 func (c *Ctx) Reset() *Ctx {
-	c.buf = c.buf[:0]
+	for i := 0; i < c.ll; i++ {
+		c.log[i].k = ""
+		c.log[i].v = nil
+	}
 	return c
 }

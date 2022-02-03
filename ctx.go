@@ -8,7 +8,7 @@ import (
 )
 
 type Ctx struct {
-	component, id string
+	id string
 
 	mux sync.Mutex
 	lck uint32
@@ -25,11 +25,6 @@ func NewCtx() *Ctx {
 
 func (c *Ctx) SetMarshaller(m Marshaller) Interface {
 	c.m = m
-	return c
-}
-
-func (c *Ctx) SetComponent(component string) Interface {
-	c.component = component
 	return c
 }
 

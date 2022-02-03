@@ -70,10 +70,8 @@ func (c *Ctx) Push() error {
 }
 
 func (c *Ctx) BeginTXN() Interface {
-	if !c.locked() {
-		c.lock()
-		c.mux.Lock()
-	}
+	c.lock()
+	c.mux.Lock()
 	return c
 }
 

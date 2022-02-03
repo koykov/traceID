@@ -5,6 +5,8 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+
+	"github.com/koykov/byteptr"
 )
 
 type Ctx struct {
@@ -13,7 +15,7 @@ type Ctx struct {
 	mux sync.Mutex
 	lck uint32
 	log []entry
-	ll  int
+	lb  []byte
 	m   Marshaller
 	bb  bytes.Buffer
 }
@@ -44,24 +46,31 @@ func (c *Ctx) Log(key string, val interface{}) Interface {
 }
 
 func (c *Ctx) _log(key string, val interface{}, typ EntryType) {
-	if c.ll < len(c.log) {
-		c.log[c.ll].t = typ
-		c.log[c.ll].tt = time.Now()
-		c.log[c.ll].k = key
-		c.log[c.ll].v = val
-	} else {
-		c.log = append(c.log, entry{
-			t:  typ,
-			tt: time.Now(),
-			k:  key,
-			v:  val,
-		})
+	off := len(c.lb)
+	k := byteptr.Byteptr{}
+	if l := len(key); l > 0 {
+		c.lb = append(c.lb, key...)
+		k.Init(c.lb, off, l)
 	}
-}
 
-func (c *Ctx) Push() error {
+	var m Marshaller
+	if m = c.m; m == nil {
+		m = defaultMarshaller
+	}
+	off = len(c.lb)
+	v := byteptr.Byteptr{}
+	c.bb.Reset()
+	if vb, err := m.Marshal(&c.bb, val); err == nil {
+		c.lb = append(c.lb, vb...)
+		v.Init(c.lb, off, len(vb))
+	}
 
-	return nil
+	c.log = append(c.log, entry{
+		tp: typ,
+		tt: time.Now(),
+		k:  k,
+		v:  v,
+	})
 }
 
 func (c *Ctx) BeginTXN() Interface {
@@ -75,19 +84,11 @@ func (c *Ctx) Commit() error {
 		c.mux.Unlock()
 		c.unlock()
 	}
-	if c.m == nil {
-		return ErrNoMarshaller
-	}
 	return nil
 }
 
 func (c *Ctx) Reset() *Ctx {
-	for i := 0; i < c.ll; i++ {
-		c.log[i].t = 0
-		c.log[i].k = ""
-		c.log[i].v = nil
-	}
-	c.ll = 0
+	c.log = c.log[:0]
 	c.m = nil
 	c.bb.Reset()
 	return c

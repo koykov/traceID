@@ -1,6 +1,10 @@
 package traceID
 
-import "time"
+import (
+	"time"
+
+	"github.com/koykov/byteptr"
+)
 
 type EntryType uint8
 
@@ -10,8 +14,7 @@ const (
 )
 
 type entry struct {
-	t  EntryType
-	tt time.Time
-	k  string
-	v  interface{}
+	tp   EntryType
+	tt   time.Time
+	k, v byteptr.Byteptr
 }

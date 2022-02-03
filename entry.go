@@ -7,7 +7,6 @@ type EntryType uint8
 const (
 	EntryLog EntryType = iota
 	EntrySubject
-	EntryComponent
 )
 
 type entry struct {

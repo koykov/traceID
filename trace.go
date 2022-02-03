@@ -1,6 +1,7 @@
 package traceID
 
 type Interface interface {
+	SetMarshaller(Marshaller) Interface
 	SetComponent(string) Interface
 	SetID(string) Interface
 	Subject(string) Interface

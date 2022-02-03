@@ -89,8 +89,13 @@ func (c *Ctx) Commit() error {
 
 func (c *Ctx) Reset() *Ctx {
 	c.log = c.log[:0]
+	c.lb = c.lb[:0]
 	c.m = nil
 	c.bb.Reset()
+	if c.locked() {
+		c.mux.Unlock()
+		c.unlock()
+	}
 	return c
 }
 

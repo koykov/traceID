@@ -1,7 +1,9 @@
 package traceID
 
 import (
+	"bytes"
 	"sync"
+	"sync/atomic"
 	"time"
 )
 
@@ -9,9 +11,11 @@ type Ctx struct {
 	component, id string
 
 	mux sync.Mutex
+	lck uint32
 	log []entry
 	ll  int
 	m   Marshaller
+	bb  bytes.Buffer
 }
 
 func NewCtx() *Ctx {
@@ -61,17 +65,27 @@ func (c *Ctx) _log(key string, val interface{}, typ EntryType) {
 }
 
 func (c *Ctx) Push() error {
+
 	return nil
 }
 
 func (c *Ctx) BeginTXN() Interface {
-	c.mux.Lock()
+	if !c.locked() {
+		c.lock()
+		c.mux.Lock()
+	}
 	return c
 }
 
 func (c *Ctx) Commit() error {
-	c.mux.Unlock()
-	return c.Push()
+	if !c.locked() {
+		c.mux.Unlock()
+		c.unlock()
+	}
+	if c.m == nil {
+		return ErrNoMarshaller
+	}
+	return nil
 }
 
 func (c *Ctx) Reset() *Ctx {
@@ -82,5 +96,18 @@ func (c *Ctx) Reset() *Ctx {
 	}
 	c.ll = 0
 	c.m = nil
+	c.bb.Reset()
 	return c
+}
+
+func (c *Ctx) lock() {
+	atomic.StoreUint32(&c.lck, 1)
+}
+
+func (c *Ctx) unlock() {
+	atomic.StoreUint32(&c.lck, 0)
+}
+
+func (c *Ctx) locked() bool {
+	return atomic.LoadUint32(&c.lck) == 1
 }

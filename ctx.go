@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/koykov/byteptr"
+	. "github.com/koykov/entry"
 )
 
 type Ctx struct {
@@ -47,10 +47,10 @@ func (c *Ctx) Log(key string, val interface{}) Interface {
 
 func (c *Ctx) _log(key string, val interface{}, typ EntryType) {
 	off := len(c.lb)
-	k := byteptr.Byteptr{}
+	var k Entry64
 	if l := len(key); l > 0 {
 		c.lb = append(c.lb, key...)
-		k.Init(c.lb, off, l)
+		k.Encode(uint32(off), uint32(off+l))
 	}
 
 	var m Marshaller
@@ -58,16 +58,16 @@ func (c *Ctx) _log(key string, val interface{}, typ EntryType) {
 		m = defaultMarshaller
 	}
 	off = len(c.lb)
-	v := byteptr.Byteptr{}
+	var v Entry64
 	c.bb.Reset()
 	if vb, err := m.Marshal(&c.bb, val); err == nil {
 		c.lb = append(c.lb, vb...)
-		v.Init(c.lb, off, len(vb))
+		v.Encode(uint32(off), uint32(off+len(vb)))
 	}
 
 	c.log = append(c.log, entry{
 		tp: typ,
-		tt: time.Now(),
+		tt: time.Now().UnixNano(),
 		k:  k,
 		v:  v,
 	})

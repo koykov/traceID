@@ -2,10 +2,12 @@ package traceID
 
 import (
 	"bytes"
+	"encoding/binary"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/koykov/bytealg"
 	. "github.com/koykov/entry"
 )
 
@@ -97,6 +99,53 @@ func (c *Ctx) Reset() *Ctx {
 		c.unlock()
 	}
 	return c
+}
+
+func (c *Ctx) encode() error {
+	c.lock()
+	c.mux.Lock()
+
+	poff := len(c.lb)
+	size := c.size()
+	bytealg.GrowDelta(c.lb, size)
+	buf := c.lb[poff:]
+	off := 0
+	binary.LittleEndian.PutUint16(buf[off:], Version)
+	off += 2
+	binary.LittleEndian.PutUint16(buf[off:], uint16(len(c.id)))
+	off += 2
+	copy(buf[off:], c.id)
+	off += len(c.id)
+	binary.LittleEndian.PutUint16(buf[off:], uint16(len(c.log)))
+	for i := 0; i < len(c.log); i++ {
+		e := &c.log[i]
+		buf[off] = uint8(e.tp)
+		off++
+		binary.LittleEndian.PutUint64(buf[off:], uint64(e.tt))
+		off += 8
+		binary.LittleEndian.PutUint64(buf[off:], uint64(e.k))
+		off += 8
+		binary.LittleEndian.PutUint64(buf[off:], uint64(e.v))
+		off += 8
+	}
+	binary.LittleEndian.PutUint32(buf[off:], uint32(poff))
+	off += 4
+	copy(buf[off:], c.lb[:poff])
+
+	c.mux.Unlock()
+	c.unlock()
+	return nil
+}
+
+func (c *Ctx) size() (sz int) {
+	sz += 2                            // Version
+	sz += 2                            // ID length
+	sz += len(c.id)                    // ID body
+	sz += 2                            // Entries count
+	sz += len(c.log) * (1 + 8 + 8 + 8) // Type + timestamp + key + value
+	sz += 4                            // Payload length
+	sz += len(c.lb)                    // Payload body
+	return
 }
 
 func (c *Ctx) lock() {

@@ -39,6 +39,7 @@ func Encode(ctx *Ctx) []byte {
 	copy(buf[off:], ctx.id)
 	off += len(ctx.id)
 	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.log)))
+	off += 2
 	for i := 0; i < len(ctx.log); i++ {
 		e := &ctx.log[i]
 		buf[off] = uint8(e.tp)

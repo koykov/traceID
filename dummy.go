@@ -1,5 +1,13 @@
 package traceID
 
+import "time"
+
+type DummyClock struct{}
+
+func (d DummyClock) Now() time.Time {
+	return time.Unix(123, 456)
+}
+
 type DummyCtx struct{}
 
 func (d DummyCtx) SetClock(Clock) Interface           { return d }

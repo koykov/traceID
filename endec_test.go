@@ -48,4 +48,28 @@ func TestEndec(t *testing.T) {
 			t.FailNow()
 		}
 	})
+	t.Run("decode", func(t *testing.T) {
+		var x Packet
+		if err := Decode(encoded, &x); err != nil {
+			t.Error(err)
+		}
+		if x.ID != "H8bqc4qGWqe42mb3" {
+			t.Error("ID mismatch")
+		}
+		if len(x.Records) != 4 {
+			t.FailNow()
+		}
+		if x.Records[2].Type != EntryLog {
+			t.FailNow()
+		}
+		if x.Records[2].Time != 123000000456 {
+			t.FailNow()
+		}
+		if lo, hi := x.Records[2].Key.Decode(); string(x.Buf[lo:hi]) != "example_3" {
+			t.FailNow()
+		}
+		if lo, hi := x.Records[2].Value.Decode(); string(x.Buf[lo:hi]) != "\"foobar\"\n" {
+			t.FailNow()
+		}
+	})
 }

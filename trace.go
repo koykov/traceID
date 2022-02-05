@@ -5,6 +5,7 @@ const (
 )
 
 type Interface interface {
+	SetClock(Clock) Interface
 	SetMarshaller(Marshaller) Interface
 	SetID(string) Interface
 	Subject(string) Interface

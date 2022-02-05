@@ -17,12 +17,18 @@ type Ctx struct {
 	log []entry
 	lb  []byte
 	m   Marshaller
+	c   Clock
 	bb  bytes.Buffer
 }
 
 func NewCtx() *Ctx {
 	ctx := Ctx{}
 	return &ctx
+}
+
+func (c *Ctx) SetClock(cl Clock) Interface {
+	c.c = cl
+	return c
 }
 
 func (c *Ctx) SetMarshaller(m Marshaller) Interface {
@@ -65,9 +71,15 @@ func (c *Ctx) _log(key string, val interface{}, typ EntryType) {
 		v.Encode(uint32(off), uint32(off+len(vb)))
 	}
 
+	var tt time.Time
+	if c.c != nil {
+		tt = c.c.Now()
+	} else {
+		tt = time.Now()
+	}
 	c.log = append(c.log, entry{
 		tp: typ,
-		tt: time.Now().UnixNano(),
+		tt: tt.UnixNano(),
 		k:  k,
 		v:  v,
 	})

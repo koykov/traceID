@@ -10,6 +10,7 @@ type Interface interface {
 	SetID(string) Interface
 	Subject(string) Interface
 	Log(string, interface{}) Interface
+	LogWM(string, interface{}, Marshaller) Interface
 	BeginTXN() Interface
 	Commit() error
 }

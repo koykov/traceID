@@ -7,10 +7,11 @@ import (
 	"github.com/koykov/bytealg"
 )
 
-type JSON struct{}
+type JSONFmt struct{}
 
-func (m JSON) Marshal(rw io.ReadWriter, x interface{}) (b []byte, err error) {
+func (m JSONFmt) Marshal(rw io.ReadWriter, x interface{}) (b []byte, err error) {
 	e := json.NewEncoder(rw)
+	e.SetIndent("", "\t")
 	if err = e.Encode(x); err != nil {
 		return
 	}

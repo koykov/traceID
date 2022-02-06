@@ -42,16 +42,21 @@ func (c *Ctx) SetID(id string) Interface {
 }
 
 func (c *Ctx) Subject(subject string) Interface {
-	c._log("", subject, EntrySubject)
+	c._log("", subject, nil, EntrySubject)
 	return c
 }
 
 func (c *Ctx) Log(key string, val interface{}) Interface {
-	c._log(key, val, EntryLog)
+	c._log(key, val, nil, EntryLog)
 	return c
 }
 
-func (c *Ctx) _log(key string, val interface{}, typ EntryType) {
+func (c *Ctx) LogWM(key string, val interface{}, m Marshaller) Interface {
+	c._log(key, val, m, EntryLog)
+	return c
+}
+
+func (c *Ctx) _log(key string, val interface{}, m Marshaller, typ EntryType) {
 	off := len(c.lb)
 	var k Entry64
 	if l := len(key); l > 0 {
@@ -59,14 +64,10 @@ func (c *Ctx) _log(key string, val interface{}, typ EntryType) {
 		k.Encode(uint32(off), uint32(off+l))
 	}
 
-	var m Marshaller
-	if m = c.m; m == nil {
-		m = defaultMarshaller
-	}
 	off = len(c.lb)
 	var v Entry64
 	c.bb.Reset()
-	if vb, err := m.Marshal(&c.bb, val); err == nil {
+	if vb, err := c.getm(m).Marshal(&c.bb, val); err == nil {
 		c.lb = append(c.lb, vb...)
 		v.Encode(uint32(off), uint32(off+len(vb)))
 	}
@@ -109,6 +110,16 @@ func (c *Ctx) Reset() *Ctx {
 		c.unlock()
 	}
 	return c
+}
+
+func (c *Ctx) getm(m Marshaller) Marshaller {
+	if m != nil {
+		return m
+	}
+	if c.m != nil {
+		return c.m
+	}
+	return defaultMarshaller
 }
 
 func (c *Ctx) size() (sz int) {

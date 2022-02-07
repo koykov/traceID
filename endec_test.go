@@ -2,11 +2,14 @@ package traceID
 
 import (
 	"bytes"
+	"flag"
 	"fmt"
 	"testing"
 
 	"github.com/koykov/traceID/marshaller"
 )
+
+var pb = flag.Bool("pb-bytes", false, "print encoded bytes in hex table format")
 
 func printBytes(p []byte) {
 	for i := 0; i < len(p); i++ {
@@ -57,6 +60,9 @@ func TestEndec(t *testing.T) {
 				E: true,
 			}, marshaller.JSONFmt{})
 		cb := Encode(ctx)
+		if *pb {
+			printBytes(cb)
+		}
 		if !bytes.Equal(cb, encoded) {
 			t.FailNow()
 		}

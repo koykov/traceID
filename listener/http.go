@@ -2,6 +2,7 @@ package listener
 
 import (
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
@@ -29,12 +30,12 @@ func (l HTTP) Listen(addr string, out chan []byte) error {
 	}
 
 	http.HandleFunc(p, func(w http.ResponseWriter, req *http.Request) {
-		var p []byte
-		p, err = io.ReadAll(req.Body)
+		p, err := io.ReadAll(req.Body)
 		if err != nil {
-			return
+			log.Printf("err '%s' caught on request '%s'\n", err.Error(), req.RequestURI)
+		} else {
+			out <- p
 		}
-		out <- p
 	})
 	return http.ListenAndServe(a, nil)
 }

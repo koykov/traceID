@@ -9,17 +9,17 @@ import (
 	"github.com/koykov/fastconv"
 )
 
-type Record struct {
+type MessageRow struct {
 	Type  EntryType
 	Time  int64
 	Key   Entry64
 	Value Entry64
 }
 
-type Packet struct {
+type Message struct {
 	Version uint16
 	ID      string
-	Records []Record
+	Rows    []MessageRow
 	Buf     []byte
 }
 
@@ -60,7 +60,7 @@ func Encode(ctx *Ctx) []byte {
 	return ctx.lb[poff:]
 }
 
-func Decode(p []byte, x *Packet) error {
+func Decode(p []byte, x *Message) error {
 	if len(p) < 32 {
 		return ErrPacketTooShort
 	}
@@ -80,7 +80,7 @@ func Decode(p []byte, x *Packet) error {
 		return ErrPacketTooShort
 	}
 	if l = binary.LittleEndian.Uint16(p[off:]); l > 0 {
-		x.Records = make([]Record, 0, l)
+		x.Rows = make([]MessageRow, 0, l)
 	}
 	off += 2
 	for i := 0; i < int(l); i++ {
@@ -95,7 +95,7 @@ func Decode(p []byte, x *Packet) error {
 		off += 8
 		v := binary.LittleEndian.Uint64(p[off:])
 		off += 8
-		x.Records = append(x.Records, Record{
+		x.Rows = append(x.Rows, MessageRow{
 			Type:  tp,
 			Time:  int64(tt),
 			Key:   Entry64(k),

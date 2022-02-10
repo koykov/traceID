@@ -1,6 +1,8 @@
 {
   "db": "mysql://user:pass@localhost:3306/dbname",
   "ui": "http://localhost:8080",
+  "buf_size": 512,
+  "workers": 4,
   "listeners": [
     {
       "handler": "http",

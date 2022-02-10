@@ -1,15 +1,20 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"log"
 	"os"
+	"os/signal"
+	"syscall"
 )
 
 var (
 	fcnf string
 	cnf  *Config
+	i10n chan os.Signal
+	bus  chan []byte
 )
 
 func init() {
@@ -27,17 +32,49 @@ func init() {
 		log.Fatalln("param -config is required")
 	}
 	if _, err = os.Stat(fcnf); errors.Is(err, os.ErrNotExist) {
-		log.Fatalf("config file '%s' doesn't exists", fcnf)
+		log.Fatalf("config file '%s' doesn't exists\n", fcnf)
 	}
 	if cnf, err = ParseConfig(fcnf); err != nil {
-		log.Fatalf("error '%s' caught on parse config '%s'", err.Error(), fcnf)
+		log.Fatalf("error '%s' caught on parse config '%s'\n", err.Error(), fcnf)
 	}
-	if len(cnf.Listeners) == 0 {
+
+	var la bool
+	for i := 0; i < len(cnf.Listeners); i++ {
+		if lsRepo.knowHandler(cnf.Listeners[i].Handler) {
+			la = true
+			break
+		}
+	}
+	if !la {
 		log.Fatalln("no listeners available")
 	}
+
+	i10n = make(chan os.Signal, 1)
+	signal.Notify(i10n, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 }
 
 func main() {
-	_ = cnf
+	bus = make(chan []byte, cnf.BufSize)
+
+	for i := 0; i < len(cnf.Listeners); i++ {
+		l := &cnf.Listeners[i]
+		if _, ok := lnfRepo[l.Handler]; ok {
+			ctx, cancel := context.WithCancel(context.Background())
+			listener := lsRepo.makeListener(l.Handler, l.Addr)
+			log.Printf("starting listener '%s' at '%s'\n", l.Handler, l.Addr)
+			go func() {
+				if err := listener.Listen(ctx, bus); err != nil {
+					log.Printf("listener '%s' failed to start at '%s' with error '%s'\n", l.Handler, l.Addr, err.Error())
+					return
+				}
+			}()
+			lsRepo.addLC(listener, cancel)
+		}
+	}
+
 	// ...
+
+	<-i10n
+	lsRepo.stopAll()
+	log.Println("Bye!")
 }

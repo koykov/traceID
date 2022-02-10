@@ -1,6 +1,9 @@
 package traceID
 
-import "time"
+import (
+	"context"
+	"time"
+)
 
 type DummyClock struct{}
 
@@ -22,3 +25,8 @@ func (d DummyCtx) Commit() error                                   { return nil 
 type DummyBroadcast struct{}
 
 func (d DummyBroadcast) Broadcast([]byte) (int, error) { return 0, nil }
+
+type DummyListener struct{}
+
+func (d DummyListener) SetAddr(string)                            {}
+func (d DummyListener) Listen(context.Context, chan []byte) error { return nil }

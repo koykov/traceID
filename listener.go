@@ -1,5 +1,8 @@
 package traceID
 
+import "context"
+
 type Listener interface {
-	Listen(string, chan []byte) error
+	SetAddr(string)
+	Listen(context.Context, chan []byte) error
 }

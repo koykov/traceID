@@ -1,47 +1,58 @@
 package traceID
 
 type Thread struct {
-	id  uint32
-	ctx *Ctx
+	id uint32
+	cp uintptr
 }
 
 func (t Thread) Subject(subject string) ThreadInterface {
-	if t.ctx == nil {
+	ctx := t.indirectCtx()
+	if ctx == nil {
 		return &t
 	}
-	t.ctx.lock()
-	t.ctx.logLF("", subject, nil, EntrySubject)
-	t.ctx.unlock()
+	ctx.lock()
+	ctx.logLF("", subject, nil, EntrySubject)
+	ctx.unlock()
 	return &t
 }
 
 func (t Thread) Log(key string, val interface{}) ThreadInterface {
-	if t.ctx == nil {
+	ctx := t.indirectCtx()
+	if ctx == nil {
 		return &t
 	}
-	t.ctx.lock()
-	t.ctx.logLF(key, val, nil, EntryLog)
-	t.ctx.unlock()
+	ctx.lock()
+	ctx.logLF(key, val, nil, EntryLog)
+	ctx.unlock()
 	return &t
 }
 
 func (t Thread) LogWM(key string, val interface{}, m Marshaller) ThreadInterface {
-	if t.ctx == nil {
+	ctx := t.indirectCtx()
+	if ctx == nil {
 		return &t
 	}
-	t.ctx.lock()
-	t.ctx.logLF(key, val, m, EntryLog)
-	t.ctx.unlock()
+	ctx.lock()
+	ctx.logLF(key, val, m, EntryLog)
+	ctx.unlock()
 	return &t
 }
 
 func (t Thread) Commit() (err error) {
-	if t.ctx == nil {
+	ctx := t.indirectCtx()
+	if ctx == nil {
 		err = ErrHomelessThread
 		return
 	}
-	t.ctx.lock()
-	err = t.ctx.Commit()
-	t.ctx.unlock()
+	ctx.lock()
+	err = ctx.Commit()
+	ctx.unlock()
 	return
+}
+
+func (t Thread) indirectCtx() *Ctx {
+	if t.cp == 0 {
+		return nil
+	}
+	return indirectCtx(t.cp)
 }

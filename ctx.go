@@ -5,6 +5,7 @@ import (
 	"sync"
 	"sync/atomic"
 	"time"
+	"unsafe"
 
 	. "github.com/koykov/entry"
 )
@@ -14,8 +15,8 @@ type Ctx struct {
 
 	thc uint32
 	mux sync.Mutex
-	log []entry
-	lb  []byte
+	lb  []entry
+	buf []byte
 	m   Marshaller
 	cl  Clock
 	bb  bytes.Buffer
@@ -44,8 +45,8 @@ func (c *Ctx) SetID(id string) CtxInterface {
 func (c *Ctx) Thread() ThreadInterface {
 	id := atomic.AddUint32(&c.thc, 1)
 	return &Thread{
-		id:  id,
-		ctx: c,
+		id: id,
+		cp: uintptr(unsafe.Pointer(c)),
 	}
 }
 
@@ -65,18 +66,18 @@ func (c *Ctx) LogWM(key string, val interface{}, m Marshaller) CtxInterface {
 }
 
 func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType) {
-	off := len(c.lb)
+	off := len(c.buf)
 	var k Entry64
 	if l := len(key); l > 0 {
-		c.lb = append(c.lb, key...)
+		c.buf = append(c.buf, key...)
 		k.Encode(uint32(off), uint32(off+l))
 	}
 
-	off = len(c.lb)
+	off = len(c.buf)
 	var v Entry64
 	c.bb.Reset()
 	if vb, err := c.getm(m).Marshal(&c.bb, val); err == nil {
-		c.lb = append(c.lb, vb...)
+		c.buf = append(c.buf, vb...)
 		v.Encode(uint32(off), uint32(off+len(vb)))
 	}
 
@@ -86,7 +87,7 @@ func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType) {
 	} else {
 		tt = time.Now()
 	}
-	c.log = append(c.log, entry{
+	c.lb = append(c.lb, entry{
 		tp: typ,
 		tt: tt.UnixNano(),
 		k:  k,
@@ -101,8 +102,8 @@ func (c *Ctx) Commit() error {
 
 func (c *Ctx) Reset() *Ctx {
 	c.thc = 0
-	c.log = c.log[:0]
 	c.lb = c.lb[:0]
+	c.buf = c.buf[:0]
 	c.m = nil
 	c.bb.Reset()
 	return c
@@ -119,13 +120,13 @@ func (c *Ctx) getm(m Marshaller) Marshaller {
 }
 
 func (c *Ctx) size() (sz int) {
-	sz += 2                            // Version
-	sz += 2                            // ID length
-	sz += len(c.id)                    // ID body
-	sz += 2                            // Entries count
-	sz += len(c.log) * (1 + 8 + 8 + 8) // Type + timestamp + key + value
-	sz += 4                            // Payload length
-	sz += len(c.lb)                    // Payload body
+	sz += 2                           // Version
+	sz += 2                           // ID length
+	sz += len(c.id)                   // ID body
+	sz += 2                           // Entries count
+	sz += len(c.lb) * (1 + 8 + 8 + 8) // Type + timestamp + key + value
+	sz += 4                           // Payload length
+	sz += len(c.buf)                  // Payload body
 	return
 }
 

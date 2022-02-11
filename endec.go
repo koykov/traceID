@@ -26,10 +26,10 @@ type Message struct {
 func Encode(ctx *Ctx) []byte {
 	ctx.lock()
 
-	poff := len(ctx.lb)
+	poff := len(ctx.buf)
 	size := ctx.size()
-	ctx.lb = bytealg.GrowDelta(ctx.lb, size)
-	buf := ctx.lb[poff:]
+	ctx.buf = bytealg.GrowDelta(ctx.buf, size)
+	buf := ctx.buf[poff:]
 	off := 0
 	binary.LittleEndian.PutUint16(buf[off:], Version)
 	off += 2
@@ -37,10 +37,10 @@ func Encode(ctx *Ctx) []byte {
 	off += 2
 	copy(buf[off:], ctx.id)
 	off += len(ctx.id)
-	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.log)))
+	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.lb)))
 	off += 2
-	for i := 0; i < len(ctx.log); i++ {
-		e := &ctx.log[i]
+	for i := 0; i < len(ctx.lb); i++ {
+		e := &ctx.lb[i]
 		buf[off] = uint8(e.tp)
 		off++
 		binary.LittleEndian.PutUint64(buf[off:], uint64(e.tt))
@@ -52,10 +52,10 @@ func Encode(ctx *Ctx) []byte {
 	}
 	binary.LittleEndian.PutUint32(buf[off:], uint32(poff))
 	off += 4
-	copy(buf[off:], ctx.lb[:poff])
+	copy(buf[off:], ctx.buf[:poff])
 
 	ctx.unlock()
-	return ctx.lb[poff:]
+	return ctx.buf[poff:]
 }
 
 func Decode(p []byte, x *Message) error {

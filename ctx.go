@@ -12,12 +12,12 @@ import (
 type Ctx struct {
 	id string
 
+	thc uint32
 	mux sync.Mutex
-	lck uint32
 	log []entry
 	lb  []byte
 	m   Marshaller
-	c   Clock
+	cl  Clock
 	bb  bytes.Buffer
 }
 
@@ -26,37 +26,45 @@ func NewCtx() *Ctx {
 	return &ctx
 }
 
-func (c *Ctx) SetClock(cl Clock) Interface {
-	c.c = cl
+func (c *Ctx) SetClock(cl Clock) CtxInterface {
+	c.cl = cl
 	return c
 }
 
-func (c *Ctx) SetMarshaller(m Marshaller) Interface {
+func (c *Ctx) SetMarshaller(m Marshaller) CtxInterface {
 	c.m = m
 	return c
 }
 
-func (c *Ctx) SetID(id string) Interface {
+func (c *Ctx) SetID(id string) CtxInterface {
 	c.id = id
 	return c
 }
 
-func (c *Ctx) Subject(subject string) Interface {
-	c._log("", subject, nil, EntrySubject)
+func (c *Ctx) Thread() ThreadInterface {
+	id := atomic.AddUint32(&c.thc, 1)
+	return &Thread{
+		id:  id,
+		ctx: c,
+	}
+}
+
+func (c *Ctx) Subject(subject string) CtxInterface {
+	c.logLF("", subject, nil, EntrySubject)
 	return c
 }
 
-func (c *Ctx) Log(key string, val interface{}) Interface {
-	c._log(key, val, nil, EntryLog)
+func (c *Ctx) Log(key string, val interface{}) CtxInterface {
+	c.logLF(key, val, nil, EntryLog)
 	return c
 }
 
-func (c *Ctx) LogWM(key string, val interface{}, m Marshaller) Interface {
-	c._log(key, val, m, EntryLog)
+func (c *Ctx) LogWM(key string, val interface{}, m Marshaller) CtxInterface {
+	c.logLF(key, val, m, EntryLog)
 	return c
 }
 
-func (c *Ctx) _log(key string, val interface{}, m Marshaller, typ EntryType) {
+func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType) {
 	off := len(c.lb)
 	var k Entry64
 	if l := len(key); l > 0 {
@@ -73,8 +81,8 @@ func (c *Ctx) _log(key string, val interface{}, m Marshaller, typ EntryType) {
 	}
 
 	var tt time.Time
-	if c.c != nil {
-		tt = c.c.Now()
+	if c.cl != nil {
+		tt = c.cl.Now()
 	} else {
 		tt = time.Now()
 	}
@@ -86,29 +94,17 @@ func (c *Ctx) _log(key string, val interface{}, m Marshaller, typ EntryType) {
 	})
 }
 
-func (c *Ctx) BeginTXN() Interface {
-	c.lock()
-	c.mux.Lock()
-	return c
-}
-
 func (c *Ctx) Commit() error {
-	if !c.locked() {
-		c.mux.Unlock()
-		c.unlock()
-	}
+	// ...
 	return nil
 }
 
 func (c *Ctx) Reset() *Ctx {
+	c.thc = 0
 	c.log = c.log[:0]
 	c.lb = c.lb[:0]
 	c.m = nil
 	c.bb.Reset()
-	if c.locked() {
-		c.mux.Unlock()
-		c.unlock()
-	}
 	return c
 }
 
@@ -134,13 +130,9 @@ func (c *Ctx) size() (sz int) {
 }
 
 func (c *Ctx) lock() {
-	atomic.StoreUint32(&c.lck, 1)
+	c.mux.Lock()
 }
 
 func (c *Ctx) unlock() {
-	atomic.StoreUint32(&c.lck, 0)
-}
-
-func (c *Ctx) locked() bool {
-	return atomic.LoadUint32(&c.lck) == 1
+	c.mux.Unlock()
 }

@@ -49,7 +49,7 @@ func TestEndec(t *testing.T) {
 			LogWM("example_4", struct {
 				A int32   `json:"a"`
 				B float64 `json:"b"`
-				C []byte  `json:"c"`
+				C []byte  `json:"cl"`
 				D string  `json:"d"`
 				E bool    `json:"e"`
 			}{

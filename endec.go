@@ -25,7 +25,6 @@ type Message struct {
 
 func Encode(ctx *Ctx) []byte {
 	ctx.lock()
-	ctx.mux.Lock()
 
 	poff := len(ctx.lb)
 	size := ctx.size()
@@ -55,7 +54,6 @@ func Encode(ctx *Ctx) []byte {
 	off += 4
 	copy(buf[off:], ctx.lb[:poff])
 
-	ctx.mux.Unlock()
 	ctx.unlock()
 	return ctx.lb[poff:]
 }

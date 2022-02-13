@@ -8,11 +8,12 @@ type CtxInterface interface {
 	SetClock(Clock) CtxInterface
 	SetMarshaller(Marshaller) CtxInterface
 	SetID(string) CtxInterface
-	Thread() ThreadInterface
 	Subject(string) CtxInterface
 	Log(string, interface{}) CtxInterface
 	LogWM(string, interface{}, Marshaller) CtxInterface
 	Commit() error
+	AcquireThread() ThreadInterface
+	ReleaseThread(ThreadInterface) CtxInterface
 }
 
 type ThreadInterface interface {
@@ -20,4 +21,6 @@ type ThreadInterface interface {
 	Log(string, interface{}) ThreadInterface
 	LogWM(string, interface{}, Marshaller) ThreadInterface
 	Commit() error
+	AcquireThread() ThreadInterface
+	ReleaseThread(ThreadInterface) ThreadInterface
 }

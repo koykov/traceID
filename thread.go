@@ -1,5 +1,9 @@
 package traceID
 
+import (
+	"sync/atomic"
+)
+
 type Thread struct {
 	id uint32
 	cp uintptr
@@ -48,6 +52,23 @@ func (t Thread) Commit() (err error) {
 	err = ctx.Commit()
 	ctx.unlock()
 	return
+}
+
+func (t Thread) AcquireThread() ThreadInterface {
+	ctx := t.indirectCtx()
+	if ctx == nil {
+		return &t
+	}
+	id := atomic.AddUint32(&ctx.thc, 1)
+	return &Thread{
+		id: id,
+		cp: t.cp,
+	}
+}
+
+func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
+	_ = thread
+	return t
 }
 
 func (t Thread) indirectCtx() *Ctx {

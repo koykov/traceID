@@ -42,14 +42,6 @@ func (c *Ctx) SetID(id string) CtxInterface {
 	return c
 }
 
-func (c *Ctx) Thread() ThreadInterface {
-	id := atomic.AddUint32(&c.thc, 1)
-	return &Thread{
-		id: id,
-		cp: uintptr(unsafe.Pointer(c)),
-	}
-}
-
 func (c *Ctx) Subject(subject string) CtxInterface {
 	c.logLF("", subject, nil, EntrySubject)
 	return c
@@ -98,6 +90,19 @@ func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType) {
 func (c *Ctx) Commit() error {
 	// ...
 	return nil
+}
+
+func (c *Ctx) AcquireThread() ThreadInterface {
+	id := atomic.AddUint32(&c.thc, 1)
+	return &Thread{
+		id: id,
+		cp: uintptr(unsafe.Pointer(c)),
+	}
+}
+
+func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
+	_ = thread
+	return c
 }
 
 func (c *Ctx) Reset() *Ctx {

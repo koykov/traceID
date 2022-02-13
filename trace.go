@@ -17,6 +17,7 @@ type CtxInterface interface {
 }
 
 type ThreadInterface interface {
+	GetID() uint32
 	Subject(string) ThreadInterface
 	Log(string, interface{}) ThreadInterface
 	LogWM(string, interface{}, Marshaller) ThreadInterface

@@ -25,6 +25,7 @@ func (d DummyCtx) Commit() error                                      { return n
 
 type DummyThread struct{}
 
+func (t DummyThread) GetID() uint32                                         { return 0 }
 func (t DummyThread) Subject(string) ThreadInterface                        { return &t }
 func (t DummyThread) Log(string, interface{}) ThreadInterface               { return &t }
 func (t DummyThread) LogWM(string, interface{}, Marshaller) ThreadInterface { return &t }

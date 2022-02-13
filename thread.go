@@ -1,12 +1,18 @@
 package traceID
 
 import (
+	"math"
 	"sync/atomic"
 )
 
 type Thread struct {
 	id uint32
+	rt uint32
 	cp uintptr
+}
+
+func (t Thread) GetID() uint32 {
+	return t.id
 }
 
 func (t Thread) Subject(subject string) ThreadInterface {
@@ -15,7 +21,7 @@ func (t Thread) Subject(subject string) ThreadInterface {
 		return &t
 	}
 	ctx.lock()
-	ctx.logLF("", subject, nil, EntrySubject)
+	ctx.logLF("", subject, nil, EntrySubject, t.id)
 	ctx.unlock()
 	return &t
 }
@@ -26,7 +32,7 @@ func (t Thread) Log(key string, val interface{}) ThreadInterface {
 		return &t
 	}
 	ctx.lock()
-	ctx.logLF(key, val, nil, EntryLog)
+	ctx.logLF(key, val, nil, EntryLog, t.id)
 	ctx.unlock()
 	return &t
 }
@@ -37,7 +43,7 @@ func (t Thread) LogWM(key string, val interface{}, m Marshaller) ThreadInterface
 		return &t
 	}
 	ctx.lock()
-	ctx.logLF(key, val, m, EntryLog)
+	ctx.logLF(key, val, m, EntryLog, t.id)
 	ctx.unlock()
 	return &t
 }
@@ -60,14 +66,25 @@ func (t Thread) AcquireThread() ThreadInterface {
 		return &t
 	}
 	id := atomic.AddUint32(&ctx.thc, 1)
+	ctx.lock()
+	ctx.logLF("", id, nil, EntryAcquireThread, t.id)
+	ctx.unlock()
 	return &Thread{
 		id: id,
+		rt: t.id,
 		cp: t.cp,
 	}
 }
 
 func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
-	_ = thread
+	ctx := t.indirectCtx()
+	if ctx == nil {
+		return &t
+	}
+	ctx.lock()
+	ctx.logLF("", thread.GetID(), nil, EntryReleaseThread, t.id)
+	ctx.unlock()
+	atomic.AddUint32(&ctx.thc, math.MaxUint32)
 	return t
 }
 

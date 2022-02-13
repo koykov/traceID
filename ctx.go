@@ -2,6 +2,7 @@ package traceID
 
 import (
 	"bytes"
+	"math"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -43,21 +44,21 @@ func (c *Ctx) SetID(id string) CtxInterface {
 }
 
 func (c *Ctx) Subject(subject string) CtxInterface {
-	c.logLF("", subject, nil, EntrySubject)
+	c.logLF("", subject, nil, EntrySubject, 0)
 	return c
 }
 
 func (c *Ctx) Log(key string, val interface{}) CtxInterface {
-	c.logLF(key, val, nil, EntryLog)
+	c.logLF(key, val, nil, EntryLog, 0)
 	return c
 }
 
 func (c *Ctx) LogWM(key string, val interface{}, m Marshaller) CtxInterface {
-	c.logLF(key, val, m, EntryLog)
+	c.logLF(key, val, m, EntryLog, 0)
 	return c
 }
 
-func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType) {
+func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType, tid uint32) {
 	off := len(c.buf)
 	var k Entry64
 	if l := len(key); l > 0 {
@@ -80,10 +81,11 @@ func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType) {
 		tt = time.Now()
 	}
 	c.lb = append(c.lb, entry{
-		tp: typ,
-		tt: tt.UnixNano(),
-		k:  k,
-		v:  v,
+		tp:  typ,
+		tt:  tt.UnixNano(),
+		tid: tid,
+		k:   k,
+		v:   v,
 	})
 }
 
@@ -94,14 +96,21 @@ func (c *Ctx) Commit() error {
 
 func (c *Ctx) AcquireThread() ThreadInterface {
 	id := atomic.AddUint32(&c.thc, 1)
+	c.lock()
+	c.logLF("", id, nil, EntryAcquireThread, 0)
+	c.unlock()
 	return &Thread{
 		id: id,
+		rt: 0,
 		cp: uintptr(unsafe.Pointer(c)),
 	}
 }
 
 func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
-	_ = thread
+	c.lock()
+	c.logLF("", thread.GetID(), nil, EntryReleaseThread, 0)
+	c.unlock()
+	atomic.AddUint32(&c.thc, math.MaxUint32)
 	return c
 }
 

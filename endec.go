@@ -10,10 +10,11 @@ import (
 )
 
 type MessageRow struct {
-	Type  EntryType
-	Time  int64
-	Key   Entry64
-	Value Entry64
+	Type     EntryType
+	Time     int64
+	ThreadID uint32
+	Key      Entry64
+	Value    Entry64
 }
 
 type Message struct {
@@ -45,6 +46,8 @@ func Encode(ctx *Ctx) []byte {
 		off++
 		binary.LittleEndian.PutUint64(buf[off:], uint64(e.tt))
 		off += 8
+		binary.LittleEndian.PutUint32(buf[off:], e.tid)
+		off += 4
 		binary.LittleEndian.PutUint64(buf[off:], uint64(e.k))
 		off += 8
 		binary.LittleEndian.PutUint64(buf[off:], uint64(e.v))
@@ -89,15 +92,18 @@ func Decode(p []byte, x *Message) error {
 		off++
 		tt := binary.LittleEndian.Uint64(p[off:])
 		off += 8
+		tid := binary.LittleEndian.Uint32(p[off:])
+		off += 4
 		k := binary.LittleEndian.Uint64(p[off:])
 		off += 8
 		v := binary.LittleEndian.Uint64(p[off:])
 		off += 8
 		x.Rows = append(x.Rows, MessageRow{
-			Type:  tp,
-			Time:  int64(tt),
-			Key:   Entry64(k),
-			Value: Entry64(v),
+			Type:     tp,
+			Time:     int64(tt),
+			ThreadID: tid,
+			Key:      Entry64(k),
+			Value:    Entry64(v),
 		})
 	}
 	if len(p[off:]) < 4 {

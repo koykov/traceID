@@ -35,7 +35,7 @@ func (t DummyThread) ReleaseThread(ThreadInterface) ThreadInterface         { re
 
 type DummyBroadcast struct{}
 
-func (d DummyBroadcast) Broadcast([]byte) (int, error) { return 0, nil }
+func (d DummyBroadcast) Broadcast(context.Context, []byte) (int, error) { return 0, nil }
 
 type DummyListener struct{}
 

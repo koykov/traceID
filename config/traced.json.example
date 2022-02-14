@@ -1,0 +1,18 @@
+{
+  "db": "mysql://user:pass@localhost:3306/dbname",
+  "ui": "http://localhost:8080",
+  "buf_size": 512,
+  "workers": 4,
+  "listeners": [
+    {
+      "handler": "http",
+      "addr": ":3356/post-msg"
+    }
+  ],
+  "notifiers": [
+    {
+      "handler": "slack",
+      "addr": "channel=XXX; username=YYY; https://hooks.slack.com/services/QWE/RTY/fake-token"
+    }
+  ]
+}

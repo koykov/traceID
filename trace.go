@@ -1,10 +1,13 @@
 package traceID
 
+import "time"
+
 const (
 	Version uint16 = 1
 )
 
 type CtxInterface interface {
+	SetBroadcastTimeout(time.Duration) CtxInterface
 	SetClock(Clock) CtxInterface
 	SetMarshaller(Marshaller) CtxInterface
 	SetID(string) CtxInterface

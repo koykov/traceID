@@ -25,8 +25,6 @@ type Message struct {
 }
 
 func Encode(ctx *Ctx) []byte {
-	ctx.lock()
-
 	poff := len(ctx.buf)
 	size := ctx.size()
 	ctx.buf = bytealg.GrowDelta(ctx.buf, size)
@@ -57,7 +55,6 @@ func Encode(ctx *Ctx) []byte {
 	off += 4
 	copy(buf[off:], ctx.buf[:poff])
 
-	ctx.unlock()
 	return ctx.buf[poff:]
 }
 

@@ -13,6 +13,7 @@ func (d DummyClock) Now() time.Time {
 
 type DummyCtx struct{}
 
+func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface     { return d }
 func (d DummyCtx) SetClock(Clock) CtxInterface                        { return d }
 func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface              { return d }
 func (d DummyCtx) SetID(string) CtxInterface                          { return d }

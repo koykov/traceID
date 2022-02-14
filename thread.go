@@ -1,7 +1,6 @@
 package traceID
 
 import (
-	"math"
 	"sync/atomic"
 )
 
@@ -84,7 +83,6 @@ func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	ctx.lock()
 	ctx.logLF("", thread.GetID(), nil, EntryReleaseThread, t.id)
 	ctx.unlock()
-	atomic.AddUint32(&ctx.thc, math.MaxUint32)
 	return t
 }
 

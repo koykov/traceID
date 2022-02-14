@@ -2,7 +2,6 @@ package traceID
 
 import (
 	"bytes"
-	"math"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -14,6 +13,7 @@ import (
 type Ctx struct {
 	id string
 
+	bto time.Duration
 	thc uint32
 	mux sync.Mutex
 	lb  []entry
@@ -26,6 +26,11 @@ type Ctx struct {
 func NewCtx() *Ctx {
 	ctx := Ctx{}
 	return &ctx
+}
+
+func (c *Ctx) SetBroadcastTimeout(timeout time.Duration) CtxInterface {
+	c.bto = timeout
+	return c
 }
 
 func (c *Ctx) SetClock(cl Clock) CtxInterface {
@@ -89,9 +94,13 @@ func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType, ti
 	})
 }
 
-func (c *Ctx) Commit() error {
-	// ...
-	return nil
+func (c *Ctx) Commit() (err error) {
+	c.lock()
+	message := Encode(c)
+	c.resetBuf()
+	c.unlock()
+	err = BroadcastWithTimeout(message, c.bto)
+	return
 }
 
 func (c *Ctx) AcquireThread() ThreadInterface {
@@ -110,17 +119,21 @@ func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
 	c.lock()
 	c.logLF("", thread.GetID(), nil, EntryReleaseThread, 0)
 	c.unlock()
-	atomic.AddUint32(&c.thc, math.MaxUint32)
 	return c
 }
 
 func (c *Ctx) Reset() *Ctx {
+	c.bto = 0
 	c.thc = 0
-	c.lb = c.lb[:0]
-	c.buf = c.buf[:0]
+	c.resetBuf()
 	c.m = nil
 	c.bb.Reset()
 	return c
+}
+
+func (c *Ctx) resetBuf() {
+	c.lb = c.lb[:0]
+	c.buf = c.buf[:0]
 }
 
 func (c *Ctx) getm(m Marshaller) Marshaller {
@@ -138,7 +151,7 @@ func (c *Ctx) size() (sz int) {
 	sz += 2                               // ID length
 	sz += len(c.id)                       // ID body
 	sz += 2                               // Entries count
-	sz += len(c.lb) * (1 + 8 + 4 + 8 + 8) // Type + timestamp + threadID + key + value
+	sz += len(c.lb) * (1 + 8 + 4 + 8 + 8) // Entry type + timestamp + threadID + key + value
 	sz += 4                               // Payload length
 	sz += len(c.buf)                      // Payload body
 	return

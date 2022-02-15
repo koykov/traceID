@@ -19,9 +19,7 @@ func (t Thread) Subject(subject string) ThreadInterface {
 	if ctx == nil {
 		return &t
 	}
-	ctx.lock()
-	ctx.logLF("", subject, nil, EntrySubject, t.id)
-	ctx.unlock()
+	ctx.log("", subject, nil, EntrySubject, t.id)
 	return &t
 }
 
@@ -30,9 +28,7 @@ func (t Thread) Log(key string, val interface{}) ThreadInterface {
 	if ctx == nil {
 		return &t
 	}
-	ctx.lock()
-	ctx.logLF(key, val, nil, EntryLog, t.id)
-	ctx.unlock()
+	ctx.log(key, val, nil, EntryLog, t.id)
 	return &t
 }
 
@@ -41,9 +37,7 @@ func (t Thread) LogWM(key string, val interface{}, m Marshaller) ThreadInterface
 	if ctx == nil {
 		return &t
 	}
-	ctx.lock()
-	ctx.logLF(key, val, m, EntryLog, t.id)
-	ctx.unlock()
+	ctx.log(key, val, m, EntryLog, t.id)
 	return &t
 }
 
@@ -53,9 +47,7 @@ func (t Thread) Commit() (err error) {
 		err = ErrHomelessThread
 		return
 	}
-	ctx.lock()
 	err = ctx.Commit()
-	ctx.unlock()
 	return
 }
 
@@ -65,9 +57,7 @@ func (t Thread) AcquireThread() ThreadInterface {
 		return &t
 	}
 	id := atomic.AddUint32(&ctx.thc, 1)
-	ctx.lock()
-	ctx.logLF("", id, nil, EntryAcquireThread, t.id)
-	ctx.unlock()
+	ctx.log("", id, nil, EntryAcquireThread, t.id)
 	return &Thread{
 		id: id,
 		rt: t.id,
@@ -80,9 +70,7 @@ func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	if ctx == nil {
 		return &t
 	}
-	ctx.lock()
-	ctx.logLF("", thread.GetID(), nil, EntryReleaseThread, t.id)
-	ctx.unlock()
+	ctx.log("", thread.GetID(), nil, EntryReleaseThread, t.id)
 	return t
 }
 

@@ -9,15 +9,7 @@ import (
 
 type JSON struct{}
 
-func (m JSON) Marshal(rw io.ReadWriter, x interface{}) ([]byte, error) {
-	return m.marshal(rw, x, false)
-}
-
-func (m JSON) MarshalIndent(rw io.ReadWriter, x interface{}) ([]byte, error) {
-	return m.marshal(rw, x, true)
-}
-
-func (m JSON) marshal(rw io.ReadWriter, x interface{}, indent bool) (b []byte, err error) {
+func (m JSON) Marshal(rw io.ReadWriter, x interface{}, indent bool) (b []byte, err error) {
 	e := json.NewEncoder(rw)
 	if indent {
 		e.SetIndent("", "\t")

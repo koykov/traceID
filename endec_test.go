@@ -2,12 +2,29 @@ package traceID
 
 import (
 	"bytes"
+	"encoding/json"
 	"flag"
 	"fmt"
+	"io"
 	"testing"
 
-	"github.com/koykov/traceID/marshaller"
+	"github.com/koykov/bytealg"
 )
+
+type testM8r struct{}
+
+func (m testM8r) Marshal(rw io.ReadWriter, x interface{}, indent bool) (b []byte, err error) {
+	e := json.NewEncoder(rw)
+	if indent {
+		e.SetIndent("", "\t")
+	}
+	if err = e.Encode(x); err != nil {
+		return
+	}
+	b, err = io.ReadAll(rw)
+	b = bytealg.TrimRight(b, []byte{'\n'})
+	return
+}
 
 var pb = flag.Bool("print-bytes", false, "print encoded bytes in hex table format")
 
@@ -43,11 +60,12 @@ func TestEndec(t *testing.T) {
 	t.Run("encode", func(t *testing.T) {
 		ctx := NewCtx()
 		ctx.SetClock(DummyClock{}).
+			SetMarshaller(testM8r{}).
 			SetID("H8bqc4qGWqe42mb3").
 			Log("example_1", 2).
 			Log("example_2", 3.1415).
 			Log("example_3", "foobar").
-			LogWM("example_4", struct {
+			LogWithOptions("example_4", struct {
 				A int32   `json:"a"`
 				B float64 `json:"b"`
 				C []byte  `json:"cl"`
@@ -59,7 +77,7 @@ func TestEndec(t *testing.T) {
 				C: []byte("qwerty"),
 				D: "asdfgh",
 				E: true,
-			}, marshaller.JSONFmt{})
+			}, WithIndent(true))
 		cb := Encode(ctx)
 		if *pb {
 			printBytes(cb)

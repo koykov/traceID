@@ -49,27 +49,27 @@ func (c *Ctx) SetID(id string) CtxInterface {
 }
 
 func (c *Ctx) Subject(subject string) CtxInterface {
-	c.log("", subject, nil, EntrySubject, 0)
+	c.log("", subject, nil, false, EntrySubject, 0)
 	return c
 }
 
 func (c *Ctx) Log(key string, val interface{}) CtxInterface {
-	c.log(key, val, nil, EntryLog, 0)
+	c.log(key, val, nil, false, EntryLog, 0)
 	return c
 }
 
-func (c *Ctx) LogWM(key string, val interface{}, m Marshaller) CtxInterface {
-	c.log(key, val, m, EntryLog, 0)
+func (c *Ctx) LogWithOptions(key string, val interface{}, opts *Options) CtxInterface {
+	c.log(key, val, opts.Marshaller, opts.Indent, EntryLog, 0)
 	return c
 }
 
-func (c *Ctx) log(key string, val interface{}, m Marshaller, typ EntryType, tid uint32) {
+func (c *Ctx) log(key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
 	c.lock()
-	c.logLF(key, val, m, typ, tid)
+	c.logLF(key, val, m, ind, typ, tid)
 	c.unlock()
 }
 
-func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType, tid uint32) {
+func (c *Ctx) logLF(key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
 	off := len(c.buf)
 	var k Entry64
 	if l := len(key); l > 0 {
@@ -80,7 +80,7 @@ func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType, ti
 	off = len(c.buf)
 	var v Entry64
 	c.bb.Reset()
-	if vb, err := c.getm(m).Marshal(&c.bb, val, false); err == nil {
+	if vb, err := c.getm(m).Marshal(&c.bb, val, ind); err == nil {
 		c.buf = append(c.buf, vb...)
 		v.Encode(uint32(off), uint32(off+len(vb)))
 	}
@@ -111,7 +111,7 @@ func (c *Ctx) Commit() (err error) {
 
 func (c *Ctx) AcquireThread() ThreadInterface {
 	id := atomic.AddUint32(&c.thc, 1)
-	c.log("", id, nil, EntryAcquireThread, 0)
+	c.log("", id, nil, false, EntryAcquireThread, 0)
 	return &Thread{
 		id: id,
 		rt: 0,
@@ -120,7 +120,7 @@ func (c *Ctx) AcquireThread() ThreadInterface {
 }
 
 func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
-	c.log("", thread.GetID(), nil, EntryReleaseThread, 0)
+	c.log("", thread.GetID(), nil, false, EntryReleaseThread, 0)
 	return c
 }
 

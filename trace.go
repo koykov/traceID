@@ -13,7 +13,7 @@ type CtxInterface interface {
 	SetID(string) CtxInterface
 	Subject(string) CtxInterface
 	Log(string, interface{}) CtxInterface
-	LogWM(string, interface{}, Marshaller) CtxInterface
+	LogWithOptions(string, interface{}, *Options) CtxInterface
 	Commit() error
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
@@ -23,7 +23,7 @@ type ThreadInterface interface {
 	GetID() uint32
 	Subject(string) ThreadInterface
 	Log(string, interface{}) ThreadInterface
-	LogWM(string, interface{}, Marshaller) ThreadInterface
+	LogWithOptions(string, interface{}, *Options) ThreadInterface
 	Commit() error
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface

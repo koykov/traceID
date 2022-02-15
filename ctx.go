@@ -65,8 +65,11 @@ func (c *Ctx) LogWM(key string, val interface{}, m Marshaller) CtxInterface {
 
 func (c *Ctx) log(key string, val interface{}, m Marshaller, typ EntryType, tid uint32) {
 	c.lock()
-	defer c.unlock()
+	c.logLF(key, val, m, typ, tid)
+	c.unlock()
+}
 
+func (c *Ctx) logLF(key string, val interface{}, m Marshaller, typ EntryType, tid uint32) {
 	off := len(c.buf)
 	var k Entry64
 	if l := len(key); l > 0 {
@@ -77,7 +80,7 @@ func (c *Ctx) log(key string, val interface{}, m Marshaller, typ EntryType, tid 
 	off = len(c.buf)
 	var v Entry64
 	c.bb.Reset()
-	if vb, err := c.getm(m).Marshal(&c.bb, val); err == nil {
+	if vb, err := c.getm(m).Marshal(&c.bb, val, false); err == nil {
 		c.buf = append(c.buf, vb...)
 		v.Encode(uint32(off), uint32(off+len(vb)))
 	}

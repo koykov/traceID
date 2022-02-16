@@ -77,7 +77,7 @@ func TestEndec(t *testing.T) {
 				C: []byte("qwerty"),
 				D: "asdfgh",
 				E: true,
-			}, WithIndent(true))
+			}, Options{Indent: true})
 		cb := Encode(ctx)
 		if *pb {
 			printBytes(cb)

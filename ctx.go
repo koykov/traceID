@@ -58,7 +58,7 @@ func (c *Ctx) Log(key string, val interface{}) CtxInterface {
 	return c
 }
 
-func (c *Ctx) LogWithOptions(key string, val interface{}, opts *Options) CtxInterface {
+func (c *Ctx) LogWithOptions(key string, val interface{}, opts Options) CtxInterface {
 	c.log(key, val, opts.Marshaller, opts.Indent, EntryLog, 0)
 	return c
 }

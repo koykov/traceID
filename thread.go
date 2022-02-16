@@ -32,7 +32,7 @@ func (t Thread) Log(key string, val interface{}) ThreadInterface {
 	return &t
 }
 
-func (t Thread) LogWithOptions(key string, val interface{}, opts *Options) ThreadInterface {
+func (t Thread) LogWithOptions(key string, val interface{}, opts Options) ThreadInterface {
 	ctx := t.indirectCtx()
 	if ctx == nil {
 		return &t

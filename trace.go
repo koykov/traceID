@@ -14,9 +14,9 @@ type CtxInterface interface {
 	Subject(string) CtxInterface
 	Log(string, interface{}) CtxInterface
 	LogWithOptions(string, interface{}, Options) CtxInterface
-	Commit() error
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
+	Flush() error
 }
 
 type ThreadInterface interface {
@@ -24,7 +24,7 @@ type ThreadInterface interface {
 	Subject(string) ThreadInterface
 	Log(string, interface{}) ThreadInterface
 	LogWithOptions(string, interface{}, Options) ThreadInterface
-	Commit() error
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface
+	Flush() error
 }

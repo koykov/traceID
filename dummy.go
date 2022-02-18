@@ -22,7 +22,7 @@ func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface               { re
 func (d DummyCtx) Subject(string) CtxInterface                              { return d }
 func (d DummyCtx) Log(string, interface{}) CtxInterface                     { return d }
 func (d DummyCtx) LogWithOptions(string, interface{}, Options) CtxInterface { return d }
-func (d DummyCtx) Commit() error                                            { return nil }
+func (d DummyCtx) Flush() error                                             { return nil }
 
 type DummyThread struct{}
 
@@ -30,7 +30,7 @@ func (t DummyThread) GetID() uint32                                             
 func (t DummyThread) Subject(string) ThreadInterface                              { return &t }
 func (t DummyThread) Log(string, interface{}) ThreadInterface                     { return &t }
 func (t DummyThread) LogWithOptions(string, interface{}, Options) ThreadInterface { return &t }
-func (t DummyThread) Commit() error                                               { return nil }
+func (t DummyThread) Flush() error                                                { return nil }
 func (t DummyThread) AcquireThread() ThreadInterface                              { return DummyThread{} }
 func (t DummyThread) ReleaseThread(ThreadInterface) ThreadInterface               { return t }
 

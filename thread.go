@@ -41,13 +41,13 @@ func (t Thread) LogWithOptions(key string, val interface{}, opts Options) Thread
 	return &t
 }
 
-func (t Thread) Commit() (err error) {
+func (t Thread) Flush() (err error) {
 	ctx := t.indirectCtx()
 	if ctx == nil {
 		err = ErrHomelessThread
 		return
 	}
-	err = ctx.Commit()
+	err = ctx.Flush()
 	return
 }
 

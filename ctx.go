@@ -100,7 +100,7 @@ func (c *Ctx) logLF(key string, val interface{}, m Marshaller, ind bool, typ Ent
 	})
 }
 
-func (c *Ctx) Commit() (err error) {
+func (c *Ctx) Flush() (err error) {
 	c.lock()
 	message := Encode(c)
 	c.resetBuf()

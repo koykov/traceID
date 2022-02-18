@@ -10,6 +10,7 @@ import (
 )
 
 type MessageRow struct {
+	Level    LogLevel
 	Type     EntryType
 	Time     int64
 	ThreadID uint32
@@ -40,6 +41,8 @@ func Encode(ctx *Ctx) []byte {
 	off += 2
 	for i := 0; i < len(ctx.lb); i++ {
 		e := &ctx.lb[i]
+		buf[off] = uint8(e.ll)
+		off++
 		buf[off] = uint8(e.tp)
 		off++
 		binary.LittleEndian.PutUint64(buf[off:], uint64(e.tt))
@@ -85,6 +88,8 @@ func Decode(p []byte, x *Message) error {
 		if len(p[off:]) < 25 {
 			return ErrPacketTooShort
 		}
+		ll := LogLevel(p[off])
+		off++
 		tp := EntryType(p[off])
 		off++
 		tt := binary.LittleEndian.Uint64(p[off:])
@@ -96,6 +101,7 @@ func Decode(p []byte, x *Message) error {
 		v := binary.LittleEndian.Uint64(p[off:])
 		off += 8
 		x.Rows = append(x.Rows, MessageRow{
+			Level:    ll,
 			Type:     tp,
 			Time:     int64(tt),
 			ThreadID: tid,

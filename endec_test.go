@@ -62,10 +62,10 @@ func TestEndec(t *testing.T) {
 		ctx.SetClock(DummyClock{}).
 			SetMarshaller(testM8r{}).
 			SetID("H8bqc4qGWqe42mb3").
-			Log("example_1", 2).
-			Log("example_2", 3.1415).
-			Log("example_3", "foobar").
-			LogWithOptions("example_4", struct {
+			Var("example_1", 2).
+			Var("example_2", 3.1415).
+			Var("example_3", "foobar").
+			VarWithOptions("example_4", struct {
 				A int32   `json:"a"`
 				B float64 `json:"b"`
 				C []byte  `json:"cl"`

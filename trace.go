@@ -2,8 +2,16 @@ package traceID
 
 import "time"
 
+type LogLevel uint8
+
 const (
 	Version uint16 = 1
+
+	LevelDebug LogLevel = iota
+	LevelInfo
+	LevelWarn
+	LevelError
+	LevelFatal
 )
 
 type CtxInterface interface {
@@ -11,9 +19,13 @@ type CtxInterface interface {
 	SetClock(Clock) CtxInterface
 	SetMarshaller(Marshaller) CtxInterface
 	SetID(string) CtxInterface
-	Subject(string) CtxInterface
-	Log(string, interface{}) CtxInterface
-	LogWithOptions(string, interface{}, Options) CtxInterface
+	Debug(string) CtxInterface
+	Info(string) CtxInterface
+	Warn(string) CtxInterface
+	Error(string) CtxInterface
+	Fatal(string) CtxInterface
+	Var(string, interface{}) CtxInterface
+	VarWithOptions(string, interface{}, Options) CtxInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
 	Flush() error
@@ -21,9 +33,13 @@ type CtxInterface interface {
 
 type ThreadInterface interface {
 	GetID() uint32
-	Subject(string) ThreadInterface
-	Log(string, interface{}) ThreadInterface
-	LogWithOptions(string, interface{}, Options) ThreadInterface
+	Debug(string) ThreadInterface
+	Info(string) ThreadInterface
+	Warn(string) ThreadInterface
+	Error(string) ThreadInterface
+	Fatal(string) ThreadInterface
+	Var(string, interface{}) ThreadInterface
+	VarWithOptions(string, interface{}, Options) ThreadInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface
 	Flush() error

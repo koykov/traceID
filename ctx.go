@@ -48,28 +48,52 @@ func (c *Ctx) SetID(id string) CtxInterface {
 	return c
 }
 
-func (c *Ctx) Subject(subject string) CtxInterface {
-	c.log("", subject, nil, false, EntrySubject, 0)
+func (c *Ctx) Debug(message string) CtxInterface {
+	c.chapter(LevelDebug, message)
 	return c
 }
 
-func (c *Ctx) Log(key string, val interface{}) CtxInterface {
-	c.log(key, val, nil, false, EntryLog, 0)
+func (c *Ctx) Info(message string) CtxInterface {
+	c.chapter(LevelInfo, message)
 	return c
 }
 
-func (c *Ctx) LogWithOptions(key string, val interface{}, opts Options) CtxInterface {
-	c.log(key, val, opts.Marshaller, opts.Indent, EntryLog, 0)
+func (c *Ctx) Warn(message string) CtxInterface {
+	c.chapter(LevelWarn, message)
 	return c
 }
 
-func (c *Ctx) log(key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
+func (c *Ctx) Error(message string) CtxInterface {
+	c.chapter(LevelError, message)
+	return c
+}
+
+func (c *Ctx) Fatal(message string) CtxInterface {
+	c.chapter(LevelFatal, message)
+	return c
+}
+
+func (c *Ctx) Var(key string, val interface{}) CtxInterface {
+	c.log(LevelDebug, key, val, nil, false, EntryLog, 0)
+	return c
+}
+
+func (c *Ctx) VarWithOptions(key string, val interface{}, opts Options) CtxInterface {
+	c.log(LevelDebug, key, val, opts.Marshaller, opts.Indent, EntryLog, 0)
+	return c
+}
+
+func (c *Ctx) chapter(level LogLevel, message string) {
+	c.log(level, "", message, nil, false, EntryChapter, 0)
+}
+
+func (c *Ctx) log(level LogLevel, key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
 	c.lock()
-	c.logLF(key, val, m, ind, typ, tid)
+	c.logLF(level, key, val, m, ind, typ, tid)
 	c.unlock()
 }
 
-func (c *Ctx) logLF(key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
+func (c *Ctx) logLF(level LogLevel, key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
 	off := len(c.buf)
 	var k Entry64
 	if l := len(key); l > 0 {
@@ -92,6 +116,7 @@ func (c *Ctx) logLF(key string, val interface{}, m Marshaller, ind bool, typ Ent
 		tt = time.Now().UnixNano()
 	}
 	c.lb = append(c.lb, entry{
+		ll:  level,
 		tp:  typ,
 		tt:  tt,
 		tid: tid,
@@ -111,7 +136,7 @@ func (c *Ctx) Flush() (err error) {
 
 func (c *Ctx) AcquireThread() ThreadInterface {
 	id := atomic.AddUint32(&c.thc, 1)
-	c.log("", id, nil, false, EntryAcquireThread, 0)
+	c.log(LevelDebug, "", id, nil, false, EntryAcquireThread, 0)
 	return &Thread{
 		id: id,
 		rt: 0,
@@ -120,7 +145,7 @@ func (c *Ctx) AcquireThread() ThreadInterface {
 }
 
 func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
-	c.log("", thread.GetID(), nil, false, EntryReleaseThread, 0)
+	c.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, 0)
 	return c
 }
 

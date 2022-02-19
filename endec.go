@@ -21,6 +21,7 @@ type MessageRow struct {
 type Message struct {
 	Version uint16
 	ID      string
+	Service string
 	Rows    []MessageRow
 	Buf     []byte
 }
@@ -37,6 +38,10 @@ func Encode(ctx *Ctx) []byte {
 	off += 2
 	copy(buf[off:], ctx.id)
 	off += len(ctx.id)
+	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.svc)))
+	off += 2
+	copy(buf[off:], ctx.svc)
+	off += len(ctx.svc)
 	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.lb)))
 	off += 2
 	for i := 0; i < len(ctx.lb); i++ {
@@ -62,20 +67,35 @@ func Encode(ctx *Ctx) []byte {
 }
 
 func Decode(p []byte, x *Message) error {
-	if len(p) < 32 {
+	off := 0
+	if len(p[off:]) < 2 {
 		return ErrPacketTooShort
 	}
-	off := 0
 	if x.Version = binary.LittleEndian.Uint16(p[off:]); x.Version != Version {
 		return fmt.Errorf("version mismatch: need %d, got %d", Version, x.Version)
 	}
 	off += 2
+
+	if len(p[off:]) < 2 {
+		return ErrPacketTooShort
+	}
 	l := binary.LittleEndian.Uint16(p[off:])
 	off += 2
 	if l >= uint16(len(p[off:])) {
 		return ErrPacketTooShort
 	}
 	x.ID = fastconv.B2S(p[off : off+int(l)])
+	off += int(l)
+
+	if len(p[off:]) < 2 {
+		return ErrPacketTooShort
+	}
+	l = binary.LittleEndian.Uint16(p[off:])
+	off += 2
+	if l >= uint16(len(p[off:])) {
+		return ErrPacketTooShort
+	}
+	x.Service = fastconv.B2S(p[off : off+int(l)])
 	off += int(l)
 	if len(p[off:]) < 2 {
 		return ErrPacketTooShort
@@ -85,7 +105,7 @@ func Decode(p []byte, x *Message) error {
 	}
 	off += 2
 	for i := 0; i < int(l); i++ {
-		if len(p[off:]) < 25 {
+		if len(p[off:]) < 30 {
 			return ErrPacketTooShort
 		}
 		ll := LogLevel(p[off])

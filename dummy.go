@@ -17,6 +17,7 @@ func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface               
 func (d DummyCtx) SetClock(Clock) CtxInterface                                      { return d }
 func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface                            { return d }
 func (d DummyCtx) SetID(string) CtxInterface                                        { return d }
+func (d DummyCtx) SetService(string) CtxInterface                                   { return d }
 func (d DummyCtx) AcquireThread() ThreadInterface                                   { return DummyThread{} }
 func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface                       { return d }
 func (d DummyCtx) Debug(string) CtxInterface                                        { return d }

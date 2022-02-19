@@ -11,7 +11,7 @@ import (
 )
 
 type Ctx struct {
-	id string
+	id, svc string
 
 	bto time.Duration
 	thc uint32
@@ -45,6 +45,11 @@ func (c *Ctx) SetMarshaller(m Marshaller) CtxInterface {
 
 func (c *Ctx) SetID(id string) CtxInterface {
 	c.id = id
+	return c
+}
+
+func (c *Ctx) SetService(svc string) CtxInterface {
+	c.svc = svc
 	return c
 }
 
@@ -193,6 +198,8 @@ func (c *Ctx) size() (sz int) {
 	sz += 2                                   // Version
 	sz += 2                                   // ID length
 	sz += len(c.id)                           // ID body
+	sz += 2                                   // Service length
+	sz += len(c.svc)                          // Service body
 	sz += 2                                   // Entries count
 	sz += len(c.lb) * (1 + 1 + 8 + 4 + 8 + 8) // Entry log level + type + timestamp + threadID + name + value
 	sz += 4                                   // Payload length

@@ -18,6 +18,7 @@ type CtxInterface interface {
 	SetBroadcastTimeout(time.Duration) CtxInterface
 	SetClock(Clock) CtxInterface
 	SetMarshaller(Marshaller) CtxInterface
+	SetService(string) CtxInterface
 	SetID(string) CtxInterface
 	Debug(string) CtxInterface
 	Info(string) CtxInterface

@@ -2,6 +2,7 @@ package main
 
 import (
 	"database/sql"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -18,6 +19,9 @@ func dbConnect(addr string) (err error) {
 		return
 	}
 	drv := addr[:di]
+	if len(drv) == 0 {
+		return errors.New("empty DB driver")
+	}
 	addr = addr[di+3:]
 	if dbi, err = sql.Open(drv, addr); err != nil {
 		return

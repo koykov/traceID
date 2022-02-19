@@ -76,10 +76,15 @@ func main() {
 		}
 	}
 
-	// ...
+	for i := uint(0); i < cnf.Workers; i++ {
+		ctx, cancel := context.WithCancel(context.Background())
+		wsRepo.makeWorker(ctx, cancel)
+		go wsRepo.startWorker(i, bus)
+	}
 
 	<-i10n
 	lsRepo.stopAll()
+	wsRepo.stopAll()
 	_ = dbClose()
 	log.Println("Bye!")
 }

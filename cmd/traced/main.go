@@ -78,8 +78,8 @@ func main() {
 
 	for i := uint(0); i < cnf.Workers; i++ {
 		ctx, cancel := context.WithCancel(context.Background())
-		wsRepo.makeWorker(ctx, cancel)
-		go wsRepo.startWorker(i, bus)
+		w := wsRepo.makeWorker(ctx, cancel, cnf.Verbose)
+		go w.work(bus)
 	}
 
 	<-i10n

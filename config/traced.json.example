@@ -3,6 +3,7 @@
   "ui": "http://localhost:8080",
   "buf_size": 512,
   "workers": 4,
+  "verbose": false,
   "listeners": [
     {
       "handler": "http",

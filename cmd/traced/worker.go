@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"log"
 
 	"github.com/koykov/traceID"
 )
 
 type worker struct {
-	id     uint
-	ctx    context.Context
-	cancel context.CancelFunc
+	id      uint
+	ctx     context.Context
+	cancel  context.CancelFunc
+	verbose bool
 }
 
 type workerRepo struct {
@@ -21,19 +23,15 @@ var (
 	wsRepo workerRepo
 )
 
-func (r *workerRepo) makeWorker(ctx context.Context, cancel context.CancelFunc) {
+func (r *workerRepo) makeWorker(ctx context.Context, cancel context.CancelFunc, verbose bool) *worker {
 	w := worker{
-		id:     uint(len(r.buf)),
-		ctx:    ctx,
-		cancel: cancel,
+		id:      uint(len(r.buf)),
+		ctx:     ctx,
+		cancel:  cancel,
+		verbose: verbose,
 	}
 	r.buf = append(r.buf, w)
-}
-
-func (r *workerRepo) startWorker(idx uint, bus chan []byte) {
-	if idx < uint(len(r.buf)) {
-		r.buf[idx].work(bus)
-	}
+	return &w
 }
 
 func (r *workerRepo) stopAll() {
@@ -43,6 +41,9 @@ func (r *workerRepo) stopAll() {
 }
 
 func (w worker) work(bus chan []byte) {
+	if w.verbose {
+		log.Printf("worker #%d started\n", w.id)
+	}
 	for {
 		select {
 		case p := <-bus:
@@ -51,8 +52,15 @@ func (w worker) work(bus chan []byte) {
 				log.Printf("message decode failed: %s\n", err.Error())
 				continue
 			}
+			if w.verbose {
+				b, _ := json.Marshal(msg)
+				log.Printf("message received: %s", string(b))
+			}
 			// todo write message to db and notify
 		case <-w.ctx.Done():
+			if w.verbose {
+				log.Printf("worker #%d stopped\n", w.id)
+			}
 			return
 		}
 	}

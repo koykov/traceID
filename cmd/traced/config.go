@@ -12,6 +12,8 @@ type Config struct {
 	BufSize uint `json:"buf_size"`
 	Workers uint `json:"workers"`
 
+	Verbose bool `json:"verbose"`
+
 	Listeners []Listener `json:"listeners"`
 	Notifiers []Notifier `json:"notifiers"`
 }

@@ -18,6 +18,7 @@ func dbConnect(addr string) (err error) {
 		return
 	}
 	drv := addr[:di]
+	addr = addr[di+3:]
 	if dbi, err = sql.Open(drv, addr); err != nil {
 		return
 	}
@@ -25,4 +26,11 @@ func dbConnect(addr string) (err error) {
 		return
 	}
 	return
+}
+
+func dbClose() error {
+	if dbi == nil {
+		return nil
+	}
+	return dbi.Close()
 }

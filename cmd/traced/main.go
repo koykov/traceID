@@ -49,6 +49,10 @@ func init() {
 		log.Fatalln("no listeners available")
 	}
 
+	if err = dbConnect(cnf.DB); err != nil {
+		log.Fatalf("couldn't connect to DB: %s\n", err.Error())
+	}
+
 	i10n = make(chan os.Signal, 1)
 	signal.Notify(i10n, os.Interrupt, syscall.SIGINT, syscall.SIGTERM)
 }
@@ -76,5 +80,6 @@ func main() {
 
 	<-i10n
 	lsRepo.stopAll()
+	_ = dbClose()
 	log.Println("Bye!")
 }

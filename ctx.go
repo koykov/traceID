@@ -83,6 +83,22 @@ func (c *Ctx) VarWithOptions(key string, val interface{}, opts Options) CtxInter
 	return c
 }
 
+func (c *Ctx) VarIf(condition bool, key string, val interface{}) CtxInterface {
+	if !condition {
+		return c
+	}
+	c.log(LevelDebug, key, val, nil, false, EntryLog, 0)
+	return c
+}
+
+func (c *Ctx) VarWithOptionsIf(condition bool, key string, val interface{}, opts Options) CtxInterface {
+	if !condition {
+		return c
+	}
+	c.log(LevelDebug, key, val, opts.Marshaller, opts.Indent, EntryLog, 0)
+	return c
+}
+
 func (c *Ctx) chapter(level LogLevel, message string) {
 	c.log(level, "", message, nil, false, EntryChapter, 0)
 }

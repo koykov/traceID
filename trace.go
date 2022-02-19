@@ -26,6 +26,8 @@ type CtxInterface interface {
 	Fatal(string) CtxInterface
 	Var(string, interface{}) CtxInterface
 	VarWithOptions(string, interface{}, Options) CtxInterface
+	VarIf(bool, string, interface{}) CtxInterface
+	VarWithOptionsIf(bool, string, interface{}, Options) CtxInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
 	Flush() error
@@ -40,6 +42,8 @@ type ThreadInterface interface {
 	Fatal(string) ThreadInterface
 	Var(string, interface{}) ThreadInterface
 	VarWithOptions(string, interface{}, Options) ThreadInterface
+	VarIf(bool, string, interface{}) ThreadInterface
+	VarWithOptionsIf(bool, string, interface{}, Options) ThreadInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface
 	Flush() error

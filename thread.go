@@ -57,6 +57,20 @@ func (t Thread) VarWithOptions(key string, val interface{}, opts Options) Thread
 	return &t
 }
 
+func (t Thread) VarIf(condition bool, key string, val interface{}) ThreadInterface {
+	if !condition {
+		return &t
+	}
+	return t.Var(key, val)
+}
+
+func (t Thread) VarWithOptionsIf(condition bool, key string, val interface{}, opts Options) ThreadInterface {
+	if !condition {
+		return &t
+	}
+	return t.VarWithOptions(key, val, opts)
+}
+
 func (t Thread) Flush() (err error) {
 	ctx := t.indirectCtx()
 	if ctx == nil {

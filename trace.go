@@ -5,13 +5,13 @@ import "time"
 type LogLevel uint8
 
 const (
-	Version uint16 = 1
-
 	LevelDebug LogLevel = iota
 	LevelInfo
 	LevelWarn
 	LevelError
 	LevelFatal
+
+	Version uint16 = 1
 )
 
 type CtxInterface interface {

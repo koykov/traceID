@@ -48,72 +48,72 @@ func (c *Ctx) SetID(id string) CtxInterface {
 	return c
 }
 
-func (c *Ctx) Debug(message string) CtxInterface {
-	c.chapter(LevelDebug, message)
+func (c *Ctx) Debug(msg string) CtxInterface {
+	c.chapter(LevelDebug, msg)
 	return c
 }
 
-func (c *Ctx) Info(message string) CtxInterface {
-	c.chapter(LevelInfo, message)
+func (c *Ctx) Info(msg string) CtxInterface {
+	c.chapter(LevelInfo, msg)
 	return c
 }
 
-func (c *Ctx) Warn(message string) CtxInterface {
-	c.chapter(LevelWarn, message)
+func (c *Ctx) Warn(msg string) CtxInterface {
+	c.chapter(LevelWarn, msg)
 	return c
 }
 
-func (c *Ctx) Error(message string) CtxInterface {
-	c.chapter(LevelError, message)
+func (c *Ctx) Error(msg string) CtxInterface {
+	c.chapter(LevelError, msg)
 	return c
 }
 
-func (c *Ctx) Fatal(message string) CtxInterface {
-	c.chapter(LevelFatal, message)
+func (c *Ctx) Fatal(msg string) CtxInterface {
+	c.chapter(LevelFatal, msg)
 	return c
 }
 
-func (c *Ctx) Var(key string, val interface{}) CtxInterface {
-	c.log(LevelDebug, key, val, nil, false, EntryLog, 0)
+func (c *Ctx) Var(name string, val interface{}) CtxInterface {
+	c.log(LevelDebug, name, val, nil, false, EntryLog, 0)
 	return c
 }
 
-func (c *Ctx) VarWithOptions(key string, val interface{}, opts Options) CtxInterface {
-	c.log(LevelDebug, key, val, opts.Marshaller, opts.Indent, EntryLog, 0)
+func (c *Ctx) VarWithOptions(name string, val interface{}, opts Options) CtxInterface {
+	c.log(LevelDebug, name, val, opts.Marshaller, opts.Indent, EntryLog, 0)
 	return c
 }
 
-func (c *Ctx) VarIf(condition bool, key string, val interface{}) CtxInterface {
-	if !condition {
+func (c *Ctx) VarIf(cond bool, name string, val interface{}) CtxInterface {
+	if !cond {
 		return c
 	}
-	c.log(LevelDebug, key, val, nil, false, EntryLog, 0)
+	c.log(LevelDebug, name, val, nil, false, EntryLog, 0)
 	return c
 }
 
-func (c *Ctx) VarWithOptionsIf(condition bool, key string, val interface{}, opts Options) CtxInterface {
-	if !condition {
+func (c *Ctx) VarWithOptionsIf(cond bool, name string, val interface{}, opts Options) CtxInterface {
+	if !cond {
 		return c
 	}
-	c.log(LevelDebug, key, val, opts.Marshaller, opts.Indent, EntryLog, 0)
+	c.log(LevelDebug, name, val, opts.Marshaller, opts.Indent, EntryLog, 0)
 	return c
 }
 
-func (c *Ctx) chapter(level LogLevel, message string) {
-	c.log(level, "", message, nil, false, EntryChapter, 0)
+func (c *Ctx) chapter(level LogLevel, msg string) {
+	c.log(level, "", msg, nil, false, EntryChapter, 0)
 }
 
-func (c *Ctx) log(level LogLevel, key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
+func (c *Ctx) log(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
 	c.lock()
-	c.logLF(level, key, val, m, ind, typ, tid)
+	c.logLF(level, name, val, m, ind, typ, tid)
 	c.unlock()
 }
 
-func (c *Ctx) logLF(level LogLevel, key string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
+func (c *Ctx) logLF(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
 	off := len(c.buf)
 	var k Entry64
-	if l := len(key); l > 0 {
-		c.buf = append(c.buf, key...)
+	if l := len(name); l > 0 {
+		c.buf = append(c.buf, name...)
 		k.Encode(uint32(off), uint32(off+l))
 	}
 
@@ -194,7 +194,7 @@ func (c *Ctx) size() (sz int) {
 	sz += 2                                   // ID length
 	sz += len(c.id)                           // ID body
 	sz += 2                                   // Entries count
-	sz += len(c.lb) * (1 + 1 + 8 + 4 + 8 + 8) // Entry log level + type + timestamp + threadID + key + value
+	sz += len(c.lb) * (1 + 1 + 8 + 4 + 8 + 8) // Entry log level + type + timestamp + threadID + name + value
 	sz += 4                                   // Payload length
 	sz += len(c.buf)                          // Payload body
 	return

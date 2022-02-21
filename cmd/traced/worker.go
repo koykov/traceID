@@ -56,7 +56,12 @@ func (w worker) work(bus chan []byte) {
 				b, _ := json.Marshal(msg)
 				log.Printf("message received: %s", string(b))
 			}
-			// todo write message to db and notify
+
+			if _, err := dbFlushMsg(&msg, context.Background()); err != nil {
+				log.Printf("message flush failed: %s\n", err.Error())
+			} else if w.verbose {
+				log.Printf("messaged %s flushed\n", msg.ID)
+			}
 		case <-w.ctx.Done():
 			if w.verbose {
 				log.Printf("worker #%d stopped\n", w.id)

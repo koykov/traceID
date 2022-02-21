@@ -9,10 +9,10 @@ import (
 )
 
 type worker struct {
-	id      uint
-	ctx     context.Context
-	cancel  context.CancelFunc
-	verbose bool
+	id     uint
+	ctx    context.Context
+	cancel context.CancelFunc
+	cnf    *Config
 }
 
 type workerRepo struct {
@@ -23,12 +23,12 @@ var (
 	wsRepo workerRepo
 )
 
-func (r *workerRepo) makeWorker(ctx context.Context, cancel context.CancelFunc, verbose bool) *worker {
+func (r *workerRepo) makeWorker(ctx context.Context, cancel context.CancelFunc, cnf *Config) *worker {
 	w := worker{
-		id:      uint(len(r.buf)),
-		ctx:     ctx,
-		cancel:  cancel,
-		verbose: verbose,
+		id:     uint(len(r.buf)),
+		ctx:    ctx,
+		cancel: cancel,
+		cnf:    cnf,
 	}
 	r.buf = append(r.buf, w)
 	return &w
@@ -41,7 +41,7 @@ func (r *workerRepo) stopAll() {
 }
 
 func (w worker) work(bus chan []byte) {
-	if w.verbose {
+	if w.cnf.Verbose {
 		log.Printf("worker #%d started\n", w.id)
 	}
 	for {
@@ -52,18 +52,18 @@ func (w worker) work(bus chan []byte) {
 				log.Printf("message decode failed: %s\n", err.Error())
 				continue
 			}
-			if w.verbose {
+			if w.cnf.Verbose {
 				b, _ := json.Marshal(msg)
 				log.Printf("message received: %s", string(b))
 			}
 
 			if _, err := dbFlushMsg(&msg, context.Background()); err != nil {
 				log.Printf("message flush failed: %s\n", err.Error())
-			} else if w.verbose {
+			} else if w.cnf.Verbose {
 				log.Printf("messaged %s flushed\n", msg.ID)
 			}
 		case <-w.ctx.Done():
-			if w.verbose {
+			if w.cnf.Verbose {
 				log.Printf("worker #%d stopped\n", w.id)
 			}
 			return

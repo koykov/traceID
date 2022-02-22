@@ -5,7 +5,7 @@ import "testing"
 func TestTelegram(t *testing.T) {
 	t.Run("parse addr", func(t *testing.T) {
 		n := &Telegram{}
-		n.SetAddr("chatID=-XXX; token=000:YYY; template=New ID [#{TID}](https://trace.com/{TID}).")
+		n.SetConfig("chatID=-XXX; token=000:YYY; template=New ID [#{TID}](https://trace.com/{TID}).")
 		if err := n.parseAddr(); err != nil {
 			t.Error(err)
 		}

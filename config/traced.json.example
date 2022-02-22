@@ -13,7 +13,7 @@
   "notifiers": [
     {
       "handler": "slack",
-      "addr": "channel=XXX; username=YYY; https://hooks.slack.com/services/QWE/RTY/fake-token"
+      "addr": "channel=XXX; username=YYY; template=New traceID <https://trace.com/{TID}|#{TID}>.; https://hooks.slack.com/services/QWE/RTY/fake-token"
     }
   ]
 }

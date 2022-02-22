@@ -1,25 +1,26 @@
 package notifier
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
-	"fmt"
-	"os/exec"
+	"net/http"
 	"strings"
 
 	"github.com/koykov/bytealg"
-	"github.com/koykov/fastconv"
 )
 
 type Slack struct {
 	notifier
-	channel, username, url string
+	channel, username, template, url string
 }
 
 func (n Slack) Notify(ctx context.Context, id string) (err error) {
-	if n.channel, n.username, n.url, err = n.parseAddr(); err != nil {
+	if n.channel, n.username, n.template, n.url, err = n.parseAddr(); err != nil {
 		return
 	}
+
+	msg := strings.ReplaceAll(n.template, "{TID}", id)
 
 	x := struct {
 		Channel  string `json:"channel"`
@@ -28,17 +29,20 @@ func (n Slack) Notify(ctx context.Context, id string) (err error) {
 	}{
 		Channel:  n.channel,
 		Username: n.username,
-		Text:     fmt.Sprintf("New traceID <https://trace.com/%s|#%s> caught.", id, id),
+		Text:     msg,
 	}
 	payload, _ := json.Marshal(x)
 
-	cmd := exec.CommandContext(ctx, "curl", "-X", "POST", "--data-urlencode", fastconv.B2S(payload), n.url)
-	err = cmd.Run()
+	var req *http.Request
+	if req, err = http.NewRequestWithContext(ctx, "POST", n.url, bytes.NewBuffer(payload)); err != nil {
+		return
+	}
+	_, err = http.DefaultClient.Do(req)
 
 	return
 }
 
-func (n Slack) parseAddr() (channel, username, url string, err error) {
+func (n Slack) parseAddr() (channel, username, template, url string, err error) {
 	url = n.addr
 	var p int
 	for {
@@ -58,6 +62,8 @@ func (n Slack) parseAddr() (channel, username, url string, err error) {
 			channel = v
 		case "username":
 			username = v
+		case "template":
+			template = v
 		}
 	}
 	return

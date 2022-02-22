@@ -3,6 +3,8 @@ package main
 import (
 	"encoding/json"
 	"os"
+
+	"github.com/koykov/traceID"
 )
 
 type Config struct {
@@ -14,16 +16,11 @@ type Config struct {
 
 	Verbose bool `json:"verbose"`
 
-	Listeners []Listener `json:"listeners"`
-	Notifiers []Notifier `json:"notifiers"`
+	Listeners []Listener               `json:"listeners"`
+	Notifiers []traceID.NotifierConfig `json:"notifiers"`
 }
 
 type Listener struct {
-	Handler string `json:"handler"`
-	Addr    string `json:"addr"`
-}
-
-type Notifier struct {
 	Handler string `json:"handler"`
 	Addr    string `json:"addr"`
 }

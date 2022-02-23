@@ -53,5 +53,5 @@ func (d DummyBroadcast) Broadcast(context.Context, []byte) (int, error) { return
 
 type DummyListener struct{}
 
-func (d DummyListener) SetAddr(string)                            {}
+func (d DummyListener) SetConfig(*ListenerConfig)                 {}
 func (d DummyListener) Listen(context.Context, chan []byte) error { return nil }

@@ -1,9 +1,11 @@
 package listener
 
+import "github.com/koykov/traceID"
+
 type listener struct {
-	addr string
+	conf *traceID.ListenerConfig
 }
 
-func (l *listener) SetAddr(addr string) {
-	l.addr = addr
+func (l *listener) SetConfig(conf *traceID.ListenerConfig) {
+	l.conf = conf
 }

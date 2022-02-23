@@ -13,11 +13,15 @@ type Telegram struct {
 
 func (n Telegram) Notify(ctx context.Context, id string) (err error) {
 	x := struct {
-		ChatID string `json:"chat_id"`
-		Text   string `json:"text"`
+		ChatID    string `json:"chat_id"`
+		Text      string `json:"text"`
+		ParseMode string `json:"parse_mode,omitempty"`
 	}{
 		ChatID: n.conf.ChatID,
 		Text:   n.render(id),
+	}
+	if len(n.conf.Format) > 0 {
+		x.ParseMode = n.conf.Format
 	}
 	payload, _ := json.Marshal(x)
 

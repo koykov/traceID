@@ -15,4 +15,5 @@ type NotifierConfig struct {
 	Username string `json:"username,omitempty"`
 	Token    string `json:"token,omitempty"`
 	Template string `json:"template"`
+	Format   string `json:"format"`
 }

@@ -119,6 +119,8 @@ func Decode(p []byte, x *Message) error {
 		off += 8
 		tid := binary.LittleEndian.Uint32(p[off:])
 		off += 4
+		rid := binary.LittleEndian.Uint32(p[off:])
+		off += 4
 		k := binary.LittleEndian.Uint64(p[off:])
 		off += 8
 		v := binary.LittleEndian.Uint64(p[off:])
@@ -128,6 +130,7 @@ func Decode(p []byte, x *Message) error {
 			Type:     tp,
 			Time:     int64(tt),
 			ThreadID: tid,
+			RecordID: rid,
 			Key:      Entry64(k),
 			Value:    Entry64(v),
 		})

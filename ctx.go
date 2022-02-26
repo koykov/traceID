@@ -188,7 +188,7 @@ func (c *Ctx) newRecord(thid uint32) *Record {
 	id := atomic.AddUint32(&c.rc, 1)
 	r := &Record{
 		ctxHeir: ctxHeir{cp: uintptr(unsafe.Pointer(c))},
-		id:      id,
+		id:      id - 1,
 		thid:    thid,
 	}
 	return r

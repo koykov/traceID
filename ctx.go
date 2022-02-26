@@ -205,15 +205,15 @@ func (c *Ctx) getm(m Marshaller) Marshaller {
 }
 
 func (c *Ctx) size() (sz int) {
-	sz += 2                                   // Version
-	sz += 2                                   // ID length
-	sz += len(c.id)                           // ID body
-	sz += 2                                   // Service length
-	sz += len(c.svc)                          // Service body
-	sz += 2                                   // Entries count
-	sz += len(c.lb) * (1 + 1 + 8 + 4 + 8 + 8) // Entry log level + type + timestamp + threadID + name + value
-	sz += 4                                   // Payload length
-	sz += len(c.buf)                          // Payload body
+	sz += 2                                       // Version
+	sz += 2                                       // ID length
+	sz += len(c.id)                               // ID body
+	sz += 2                                       // Service length
+	sz += len(c.svc)                              // Service body
+	sz += 2                                       // Entries count
+	sz += len(c.lb) * (1 + 1 + 8 + 4 + 4 + 8 + 8) // Entry log level + type + timestamp + threadID + recordID + name + value
+	sz += 4                                       // Payload length
+	sz += len(c.buf)                              // Payload body
 	return
 }
 

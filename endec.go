@@ -14,6 +14,7 @@ type MessageRow struct {
 	Type     EntryType
 	Time     int64
 	ThreadID uint32
+	RecordID uint32
 	Key      Entry64
 	Value    Entry64
 }
@@ -53,6 +54,8 @@ func Encode(ctx *Ctx) []byte {
 		binary.LittleEndian.PutUint64(buf[off:], uint64(e.tt))
 		off += 8
 		binary.LittleEndian.PutUint32(buf[off:], e.tid)
+		off += 4
+		binary.LittleEndian.PutUint32(buf[off:], e.rid)
 		off += 4
 		binary.LittleEndian.PutUint64(buf[off:], uint64(e.k))
 		off += 8

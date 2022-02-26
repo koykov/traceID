@@ -18,5 +18,6 @@ type entry struct {
 	tp   EntryType
 	tt   int64
 	tid  uint32
+	rid  uint32
 	k, v Entry64
 }

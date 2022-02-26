@@ -1,84 +1,53 @@
 package traceID
 
-import (
-	"sync/atomic"
-)
-
 type Thread struct {
+	ctxHeir
 	id uint32
 	rt uint32
-	cp uintptr
 }
 
 func (t Thread) GetID() uint32 {
 	return t.id
 }
 
-func (t Thread) Debug(msg string) ThreadInterface {
-	t.chapter(LevelDebug, msg)
-	return &t
-}
-
-func (t Thread) Info(msg string) ThreadInterface {
-	t.chapter(LevelInfo, msg)
-	return &t
-}
-
-func (t Thread) Warn(msg string) ThreadInterface {
-	t.chapter(LevelWarn, msg)
-	return &t
-}
-
-func (t Thread) Error(msg string) ThreadInterface {
-	t.chapter(LevelError, msg)
-	return &t
-}
-
-func (t Thread) Fatal(msg string) ThreadInterface {
-	t.chapter(LevelFatal, msg)
-	return &t
-}
-
-func (t Thread) Var(name string, val interface{}) ThreadInterface {
-	ctx := t.indirectCtx()
-	if ctx == nil {
-		return &t
+func (t Thread) Debug(msg string) RecordInterface {
+	r := t.newRecord(LevelDebug, msg)
+	if r == nil {
+		return DummyRecord{}
 	}
-	ctx.log(LevelDebug, name, val, nil, false, EntryLog, t.id)
-	return &t
+	return r
 }
 
-func (t Thread) VarWithOptions(name string, val interface{}, opts Options) ThreadInterface {
-	ctx := t.indirectCtx()
-	if ctx == nil {
-		return &t
+func (t Thread) Info(msg string) RecordInterface {
+	r := t.newRecord(LevelInfo, msg)
+	if r == nil {
+		return DummyRecord{}
 	}
-	ctx.log(LevelDebug, name, val, opts.Marshaller, opts.Indent, EntryLog, t.id)
-	return &t
+	return r
 }
 
-func (t Thread) VarIf(cond bool, name string, val interface{}) ThreadInterface {
-	if !cond {
-		return &t
+func (t Thread) Warn(msg string) RecordInterface {
+	r := t.newRecord(LevelWarn, msg)
+	if r == nil {
+		return DummyRecord{}
 	}
-	return t.Var(name, val)
+	return r
 }
 
-func (t Thread) VarWithOptionsIf(cond bool, name string, val interface{}, opts Options) ThreadInterface {
-	if !cond {
-		return &t
+func (t Thread) Error(msg string) RecordInterface {
+	r := t.newRecord(LevelError, msg)
+	if r == nil {
+		return DummyRecord{}
 	}
-	return t.VarWithOptions(name, val, opts)
+	return r
 }
 
-func (t Thread) Flush() (err error) {
-	ctx := t.indirectCtx()
-	if ctx == nil {
-		err = ErrHomelessThread
-		return
+func (t Thread) Fatal(msg string) RecordInterface {
+	r := t.newRecord(LevelFatal, msg)
+	if r == nil {
+		return DummyRecord{}
 	}
-	err = ctx.Flush()
-	return
+	return r
 }
 
 func (t Thread) AcquireThread() ThreadInterface {
@@ -86,13 +55,7 @@ func (t Thread) AcquireThread() ThreadInterface {
 	if ctx == nil {
 		return DummyThread{}
 	}
-	id := atomic.AddUint32(&ctx.thc, 1)
-	ctx.log(LevelDebug, "", id, nil, false, EntryAcquireThread, t.id)
-	return &Thread{
-		id: id,
-		rt: t.id,
-		cp: t.cp,
-	}
+	return ctx.newThread(t.id)
 }
 
 func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
@@ -100,21 +63,16 @@ func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	if ctx == nil {
 		return &t
 	}
-	ctx.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, t.id)
+	ctx.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, t.id, 0)
 	return t
 }
 
-func (t Thread) chapter(level LogLevel, msg string) {
+func (t Thread) newRecord(level LogLevel, msg string) *Record {
 	ctx := t.indirectCtx()
 	if ctx == nil {
-		return
-	}
-	ctx.log(level, "", msg, nil, false, EntryChapter, t.id)
-}
-
-func (t Thread) indirectCtx() *Ctx {
-	if t.cp == 0 {
 		return nil
 	}
-	return indirectCtx(t.cp)
+	r := ctx.newRecord(t.id)
+	ctx.log(level, "", msg, nil, false, EntryChapter, t.id, r.id)
+	return r
 }

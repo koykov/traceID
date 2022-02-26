@@ -15,6 +15,7 @@ type Ctx struct {
 
 	bto time.Duration
 	thc uint32
+	rc  uint32
 	mux sync.Mutex
 	lb  []entry
 	buf []byte
@@ -53,68 +54,59 @@ func (c *Ctx) SetService(svc string) CtxInterface {
 	return c
 }
 
-func (c *Ctx) Debug(msg string) CtxInterface {
-	c.chapter(LevelDebug, msg)
-	return c
-}
-
-func (c *Ctx) Info(msg string) CtxInterface {
-	c.chapter(LevelInfo, msg)
-	return c
-}
-
-func (c *Ctx) Warn(msg string) CtxInterface {
-	c.chapter(LevelWarn, msg)
-	return c
-}
-
-func (c *Ctx) Error(msg string) CtxInterface {
-	c.chapter(LevelError, msg)
-	return c
-}
-
-func (c *Ctx) Fatal(msg string) CtxInterface {
-	c.chapter(LevelFatal, msg)
-	return c
-}
-
-func (c *Ctx) Var(name string, val interface{}) CtxInterface {
-	c.log(LevelDebug, name, val, nil, false, EntryLog, 0)
-	return c
-}
-
-func (c *Ctx) VarWithOptions(name string, val interface{}, opts Options) CtxInterface {
-	c.log(LevelDebug, name, val, opts.Marshaller, opts.Indent, EntryLog, 0)
-	return c
-}
-
-func (c *Ctx) VarIf(cond bool, name string, val interface{}) CtxInterface {
-	if !cond {
-		return c
+func (c *Ctx) Debug(msg string) RecordInterface {
+	r := c.record(LevelDebug, msg)
+	if r == nil {
+		return DummyRecord{}
 	}
-	c.log(LevelDebug, name, val, nil, false, EntryLog, 0)
-	return c
+	return r
 }
 
-func (c *Ctx) VarWithOptionsIf(cond bool, name string, val interface{}, opts Options) CtxInterface {
-	if !cond {
-		return c
+func (c *Ctx) Info(msg string) RecordInterface {
+	r := c.record(LevelInfo, msg)
+	if r == nil {
+		return DummyRecord{}
 	}
-	c.log(LevelDebug, name, val, opts.Marshaller, opts.Indent, EntryLog, 0)
-	return c
+	return r
 }
 
-func (c *Ctx) chapter(level LogLevel, msg string) {
-	c.log(level, "", msg, nil, false, EntryChapter, 0)
+func (c *Ctx) Warn(msg string) RecordInterface {
+	r := c.record(LevelWarn, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
 }
 
-func (c *Ctx) log(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
+func (c *Ctx) Error(msg string) RecordInterface {
+	r := c.record(LevelError, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (c *Ctx) Fatal(msg string) RecordInterface {
+	r := c.record(LevelFatal, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (c *Ctx) record(level LogLevel, msg string) *Record {
+	r := c.newRecord(0)
+	c.log(level, "", msg, nil, false, EntryChapter, 0, r.id)
+	return r
+}
+
+func (c *Ctx) log(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
 	c.lock()
-	c.logLF(level, name, val, m, ind, typ, tid)
+	c.logLF(level, name, val, m, ind, typ, tid, rid)
 	c.unlock()
 }
 
-func (c *Ctx) logLF(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid uint32) {
+func (c *Ctx) logLF(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
 	off := len(c.buf)
 	var k Entry64
 	if l := len(name); l > 0 {
@@ -141,6 +133,7 @@ func (c *Ctx) logLF(level LogLevel, name string, val interface{}, m Marshaller, 
 		tp:  typ,
 		tt:  tt,
 		tid: tid,
+		rid: rid,
 		k:   k,
 		v:   v,
 	})
@@ -156,23 +149,20 @@ func (c *Ctx) Flush() (err error) {
 }
 
 func (c *Ctx) AcquireThread() ThreadInterface {
-	id := atomic.AddUint32(&c.thc, 1)
-	c.log(LevelDebug, "", id, nil, false, EntryAcquireThread, 0)
-	return &Thread{
-		id: id,
-		rt: 0,
-		cp: uintptr(unsafe.Pointer(c)),
-	}
+	t := c.newThread(0)
+	c.log(LevelDebug, "", t.id, nil, false, EntryAcquireThread, 0, 0)
+	return t
 }
 
 func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
-	c.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, 0)
+	c.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, 0, 0)
 	return c
 }
 
 func (c *Ctx) Reset() *Ctx {
 	c.bto = 0
 	c.thc = 0
+	c.rc = 0
 	c.resetBuf()
 	c.m = nil
 	c.bb.Reset()
@@ -182,6 +172,26 @@ func (c *Ctx) Reset() *Ctx {
 func (c *Ctx) resetBuf() {
 	c.lb = c.lb[:0]
 	c.buf = c.buf[:0]
+}
+
+func (c *Ctx) newThread(root uint32) *Thread {
+	id := atomic.AddUint32(&c.thc, 1)
+	t := &Thread{
+		ctxHeir: ctxHeir{cp: uintptr(unsafe.Pointer(c))},
+		id:      id,
+		rt:      root,
+	}
+	return t
+}
+
+func (c *Ctx) newRecord(thid uint32) *Record {
+	id := atomic.AddUint32(&c.rc, 1)
+	r := &Record{
+		ctxHeir: ctxHeir{cp: uintptr(unsafe.Pointer(c))},
+		id:      id,
+		thid:    thid,
+	}
+	return r
 }
 
 func (c *Ctx) getm(m Marshaller) Marshaller {

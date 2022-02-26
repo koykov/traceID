@@ -13,39 +13,39 @@ func (d DummyClock) Now() time.Time {
 
 type DummyCtx struct{}
 
-func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface                   { return d }
-func (d DummyCtx) SetClock(Clock) CtxInterface                                      { return d }
-func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface                            { return d }
-func (d DummyCtx) SetID(string) CtxInterface                                        { return d }
-func (d DummyCtx) SetService(string) CtxInterface                                   { return d }
-func (d DummyCtx) AcquireThread() ThreadInterface                                   { return DummyThread{} }
-func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface                       { return d }
-func (d DummyCtx) Debug(string) CtxInterface                                        { return d }
-func (d DummyCtx) Info(string) CtxInterface                                         { return d }
-func (d DummyCtx) Warn(string) CtxInterface                                         { return d }
-func (d DummyCtx) Error(string) CtxInterface                                        { return d }
-func (d DummyCtx) Fatal(string) CtxInterface                                        { return d }
-func (d DummyCtx) Var(string, interface{}) CtxInterface                             { return d }
-func (d DummyCtx) VarWithOptions(string, interface{}, Options) CtxInterface         { return d }
-func (d DummyCtx) VarIf(bool, string, interface{}) CtxInterface                     { return d }
-func (d DummyCtx) VarWithOptionsIf(bool, string, interface{}, Options) CtxInterface { return d }
-func (d DummyCtx) Flush() error                                                     { return nil }
+func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface { return d }
+func (d DummyCtx) SetClock(Clock) CtxInterface                    { return d }
+func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface          { return d }
+func (d DummyCtx) SetID(string) CtxInterface                      { return d }
+func (d DummyCtx) SetService(string) CtxInterface                 { return d }
+func (d DummyCtx) AcquireThread() ThreadInterface                 { return DummyThread{} }
+func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface     { return d }
+func (d DummyCtx) Debug(string) RecordInterface                   { return DummyRecord{} }
+func (d DummyCtx) Info(string) RecordInterface                    { return DummyRecord{} }
+func (d DummyCtx) Warn(string) RecordInterface                    { return DummyRecord{} }
+func (d DummyCtx) Error(string) RecordInterface                   { return DummyRecord{} }
+func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
+func (d DummyCtx) Flush() error                                   { return nil }
 
 type DummyThread struct{}
 
-func (t DummyThread) GetID() uint32                                                       { return 0 }
-func (t DummyThread) Debug(string) ThreadInterface                                        { return &t }
-func (t DummyThread) Info(string) ThreadInterface                                         { return &t }
-func (t DummyThread) Warn(string) ThreadInterface                                         { return &t }
-func (t DummyThread) Error(string) ThreadInterface                                        { return &t }
-func (t DummyThread) Fatal(string) ThreadInterface                                        { return &t }
-func (t DummyThread) Var(string, interface{}) ThreadInterface                             { return &t }
-func (t DummyThread) VarWithOptions(string, interface{}, Options) ThreadInterface         { return &t }
-func (t DummyThread) VarIf(bool, string, interface{}) ThreadInterface                     { return &t }
-func (t DummyThread) VarWithOptionsIf(bool, string, interface{}, Options) ThreadInterface { return &t }
-func (t DummyThread) Flush() error                                                        { return nil }
-func (t DummyThread) AcquireThread() ThreadInterface                                      { return DummyThread{} }
-func (t DummyThread) ReleaseThread(ThreadInterface) ThreadInterface                       { return t }
+func (t DummyThread) GetID() uint32                                 { return 0 }
+func (t DummyThread) Debug(string) RecordInterface                  { return DummyRecord{} }
+func (t DummyThread) Info(string) RecordInterface                   { return DummyRecord{} }
+func (t DummyThread) Warn(string) RecordInterface                   { return DummyRecord{} }
+func (t DummyThread) Error(string) RecordInterface                  { return DummyRecord{} }
+func (t DummyThread) Fatal(string) RecordInterface                  { return DummyRecord{} }
+func (t DummyThread) Flush() error                                  { return nil }
+func (t DummyThread) AcquireThread() ThreadInterface                { return DummyThread{} }
+func (t DummyThread) ReleaseThread(ThreadInterface) ThreadInterface { return t }
+
+type DummyRecord struct{}
+
+func (r DummyRecord) Var(string, interface{}) RecordInterface                             { return &r }
+func (r DummyRecord) VarWithOptions(string, interface{}, Options) RecordInterface         { return &r }
+func (r DummyRecord) VarIf(bool, string, interface{}) RecordInterface                     { return &r }
+func (r DummyRecord) VarWithOptionsIf(bool, string, interface{}, Options) RecordInterface { return &r }
+func (r DummyRecord) Flush() error                                                        { return nil }
 
 type DummyBroadcast struct{}
 

@@ -20,15 +20,11 @@ type CtxInterface interface {
 	SetMarshaller(Marshaller) CtxInterface
 	SetService(string) CtxInterface
 	SetID(string) CtxInterface
-	Debug(string) CtxInterface
-	Info(string) CtxInterface
-	Warn(string) CtxInterface
-	Error(string) CtxInterface
-	Fatal(string) CtxInterface
-	Var(string, interface{}) CtxInterface
-	VarWithOptions(string, interface{}, Options) CtxInterface
-	VarIf(bool, string, interface{}) CtxInterface
-	VarWithOptionsIf(bool, string, interface{}, Options) CtxInterface
+	Debug(string) RecordInterface
+	Info(string) RecordInterface
+	Warn(string) RecordInterface
+	Error(string) RecordInterface
+	Fatal(string) RecordInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
 	Flush() error
@@ -36,16 +32,20 @@ type CtxInterface interface {
 
 type ThreadInterface interface {
 	GetID() uint32
-	Debug(string) ThreadInterface
-	Info(string) ThreadInterface
-	Warn(string) ThreadInterface
-	Error(string) ThreadInterface
-	Fatal(string) ThreadInterface
-	Var(string, interface{}) ThreadInterface
-	VarWithOptions(string, interface{}, Options) ThreadInterface
-	VarIf(bool, string, interface{}) ThreadInterface
-	VarWithOptionsIf(bool, string, interface{}, Options) ThreadInterface
+	Debug(string) RecordInterface
+	Info(string) RecordInterface
+	Warn(string) RecordInterface
+	Error(string) RecordInterface
+	Fatal(string) RecordInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface
+	Flush() error
+}
+
+type RecordInterface interface {
+	Var(string, interface{}) RecordInterface
+	VarWithOptions(string, interface{}, Options) RecordInterface
+	VarIf(bool, string, interface{}) RecordInterface
+	VarWithOptionsIf(bool, string, interface{}, Options) RecordInterface
 	Flush() error
 }

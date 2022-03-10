@@ -37,3 +37,19 @@ func (r Record) VarWithOptionsIf(cond bool, name string, val interface{}, opts O
 	}
 	return r.VarWithOptions(name, val, opts)
 }
+
+func (r Record) Err(err error) RecordInterface {
+	ctx := r.indirectCtx()
+	if ctx == nil {
+		return &r
+	}
+	ctx.log(LevelDebug, "", err.Error(), nil, false, EntryLog, r.thid, r.id)
+	return &r
+}
+
+func (r Record) ErrIf(cond bool, err error) RecordInterface {
+	if !cond {
+		return r
+	}
+	return r.Err(err)
+}

@@ -47,5 +47,7 @@ type RecordInterface interface {
 	VarWithOptions(string, interface{}, Options) RecordInterface
 	VarIf(bool, string, interface{}) RecordInterface
 	VarWithOptionsIf(bool, string, interface{}, Options) RecordInterface
+	Err(error) RecordInterface
+	ErrIf(bool, error) RecordInterface
 	Flush() error
 }

@@ -18,6 +18,7 @@ type CtxInterface interface {
 	SetBroadcastTimeout(time.Duration) CtxInterface
 	SetClock(Clock) CtxInterface
 	SetMarshaller(Marshaller) CtxInterface
+	SetLogger(Logger) CtxInterface
 	SetService(string) CtxInterface
 	SetID(string) CtxInterface
 	Debug(string) RecordInterface
@@ -50,4 +51,21 @@ type RecordInterface interface {
 	Err(error) RecordInterface
 	ErrIf(bool, error) RecordInterface
 	Flush() error
+}
+
+func (l LogLevel) String() string {
+	switch l {
+	case LevelDebug:
+		return "DEBUG"
+	case LevelInfo:
+		return "INFO"
+	case LevelWarn:
+		return "WARN"
+	case LevelError:
+		return "ERROR"
+	case LevelFatal:
+		return "FATAL"
+	default:
+		return "UNK"
+	}
 }

@@ -8,6 +8,7 @@ import (
 	"unsafe"
 
 	. "github.com/koykov/entry"
+	"github.com/koykov/fastconv"
 )
 
 type Ctx struct {
@@ -20,6 +21,7 @@ type Ctx struct {
 	lb  []entry
 	buf []byte
 	m   Marshaller
+	l   Logger
 	cl  Clock
 	bb  bytes.Buffer
 }
@@ -41,6 +43,11 @@ func (c *Ctx) SetClock(cl Clock) CtxInterface {
 
 func (c *Ctx) SetMarshaller(m Marshaller) CtxInterface {
 	c.m = m
+	return c
+}
+
+func (c *Ctx) SetLogger(l Logger) CtxInterface {
+	c.l = l
 	return c
 }
 
@@ -137,6 +144,10 @@ func (c *Ctx) logLF(level LogLevel, name string, val interface{}, m Marshaller, 
 		k:   k,
 		v:   v,
 	})
+	if c.l != nil {
+		c.l.Printf("[%s/%s] thread %d; record %d; key '%s'; %s\n",
+			level.String(), typ.String(), tid, rid, name, fastconv.B2S(c.buf[off:]))
+	}
 }
 
 func (c *Ctx) Flush() (err error) {
@@ -165,6 +176,7 @@ func (c *Ctx) Reset() *Ctx {
 	c.rc = 0
 	c.resetBuf()
 	c.m = nil
+	c.l = nil
 	c.bb.Reset()
 	return c
 }

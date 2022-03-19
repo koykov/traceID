@@ -3,6 +3,7 @@ package traceID
 import "time"
 
 type LogLevel uint8
+type Flag int
 
 const (
 	LevelDebug LogLevel = iota
@@ -11,10 +12,13 @@ const (
 	LevelError
 	LevelFatal
 
+	FlagOverwrite Flag = 0
+
 	Version uint16 = 1
 )
 
 type CtxInterface interface {
+	SetFlag(Flag, bool) CtxInterface
 	SetBroadcastTimeout(time.Duration) CtxInterface
 	SetClock(Clock) CtxInterface
 	SetMarshaller(Marshaller) CtxInterface

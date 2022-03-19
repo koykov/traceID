@@ -7,6 +7,7 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/koykov/bitset"
 	. "github.com/koykov/entry"
 	"github.com/koykov/fastconv"
 )
@@ -14,6 +15,7 @@ import (
 type Ctx struct {
 	id, svc string
 
+	bit bitset.Bitset
 	bto time.Duration
 	thc uint32
 	rc  uint32
@@ -29,6 +31,11 @@ type Ctx struct {
 func NewCtx() *Ctx {
 	ctx := Ctx{}
 	return &ctx
+}
+
+func (c *Ctx) SetFlag(flag Flag, value bool) CtxInterface {
+	c.bit.SetBit(int(flag), value)
+	return c
 }
 
 func (c *Ctx) SetBroadcastTimeout(timeout time.Duration) CtxInterface {
@@ -218,6 +225,7 @@ func (c *Ctx) getm(m Marshaller) Marshaller {
 
 func (c *Ctx) size() (sz int) {
 	sz += 2                                       // Version
+	sz += 8                                       // Bitset
 	sz += 2                                       // ID length
 	sz += len(c.id)                               // ID body
 	sz += 2                                       // Service length

@@ -4,6 +4,7 @@ import (
 	"encoding/binary"
 	"fmt"
 
+	"github.com/koykov/bitset"
 	"github.com/koykov/bytealg"
 	. "github.com/koykov/entry"
 	"github.com/koykov/fastconv"
@@ -20,6 +21,7 @@ type MessageRow struct {
 }
 
 type Message struct {
+	Bits    bitset.Bitset
 	Version uint16
 	ID      string
 	Service string
@@ -35,6 +37,8 @@ func Encode(ctx *Ctx) []byte {
 	off := 0
 	binary.LittleEndian.PutUint16(buf[off:], Version)
 	off += 2
+	binary.LittleEndian.PutUint64(buf[off:], uint64(ctx.bit))
+	off += 8
 	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.id)))
 	off += 2
 	copy(buf[off:], ctx.id)
@@ -78,6 +82,12 @@ func Decode(p []byte, x *Message) error {
 		return fmt.Errorf("version mismatch: need %d, got %d", Version, x.Version)
 	}
 	off += 2
+
+	if len(p[off:]) < 8 {
+		return ErrPacketTooShort
+	}
+	x.Bits = bitset.Bitset(binary.LittleEndian.Uint64(p[off:]))
+	off += 8
 
 	if len(p[off:]) < 2 {
 		return ErrPacketTooShort

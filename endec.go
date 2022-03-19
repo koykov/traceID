@@ -10,25 +10,6 @@ import (
 	"github.com/koykov/fastconv"
 )
 
-type MessageRow struct {
-	Level    LogLevel
-	Type     EntryType
-	Time     int64
-	ThreadID uint32
-	RecordID uint32
-	Key      Entry64
-	Value    Entry64
-}
-
-type Message struct {
-	Bits    bitset.Bitset
-	Version uint16
-	ID      string
-	Service string
-	Rows    []MessageRow
-	Buf     []byte
-}
-
 func Encode(ctx *Ctx) []byte {
 	poff := len(ctx.buf)
 	size := ctx.size()

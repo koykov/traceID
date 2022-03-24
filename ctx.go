@@ -178,6 +178,7 @@ func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
 }
 
 func (c *Ctx) Reset() *Ctx {
+	c.bit = 0
 	c.bto = 0
 	c.thc = 0
 	c.rc = 0

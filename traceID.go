@@ -6,13 +6,13 @@ type LogLevel uint8
 type Flag int
 
 const (
-	LevelDebug LogLevel = 1
-	LevelInfo  LogLevel = 1 << 1
-	LevelWarn  LogLevel = 1 << 2
-	LevelError LogLevel = 1 << 3
-	LevelFatal LogLevel = 1 << 4
-	LevelAsset LogLevel = 1 << 5
-	LogAll              = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelFatal | LevelAsset
+	LevelDebug  LogLevel = 1
+	LevelInfo   LogLevel = 1 << 1
+	LevelWarn   LogLevel = 1 << 2
+	LevelError  LogLevel = 1 << 3
+	LevelFatal  LogLevel = 1 << 4
+	LevelAssert LogLevel = 1 << 5
+	LogAll               = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelFatal | LevelAssert
 
 	FlagOverwrite Flag = 0
 
@@ -33,6 +33,7 @@ type CtxInterface interface {
 	Warn(string) RecordInterface
 	Error(string) RecordInterface
 	Fatal(string) RecordInterface
+	Assert(string) RecordInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
 	Flush() error

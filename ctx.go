@@ -76,41 +76,31 @@ func (c *Ctx) SetLogger(l Logger) CtxInterface {
 
 func (c *Ctx) Debug(msg string) RecordInterface {
 	r := c.record(LevelDebug, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
 	return r
 }
 
 func (c *Ctx) Info(msg string) RecordInterface {
 	r := c.record(LevelInfo, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
 	return r
 }
 
 func (c *Ctx) Warn(msg string) RecordInterface {
 	r := c.record(LevelWarn, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
 	return r
 }
 
 func (c *Ctx) Error(msg string) RecordInterface {
 	r := c.record(LevelError, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
 	return r
 }
 
 func (c *Ctx) Fatal(msg string) RecordInterface {
 	r := c.record(LevelFatal, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
+	return r
+}
+
+func (c *Ctx) Assert(msg string) RecordInterface {
+	r := c.record(LevelAssert, msg)
 	return r
 }
 

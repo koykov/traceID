@@ -28,6 +28,7 @@ func (d DummyCtx) Info(string) RecordInterface                    { return Dummy
 func (d DummyCtx) Warn(string) RecordInterface                    { return DummyRecord{} }
 func (d DummyCtx) Error(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
+func (d DummyCtx) Assert(string) RecordInterface                  { return DummyRecord{} }
 func (d DummyCtx) Flush() error                                   { return nil }
 
 type DummyThread struct{}

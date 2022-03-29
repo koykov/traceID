@@ -13,13 +13,14 @@ func (d DummyClock) Now() time.Time {
 
 type DummyCtx struct{}
 
+func (d DummyCtx) SetID(string) CtxInterface                      { return d }
+func (d DummyCtx) SetService(string) CtxInterface                 { return d }
 func (d DummyCtx) SetFlag(Flag, bool) CtxInterface                { return d }
+func (d DummyCtx) Watch(_ LogLevel) CtxInterface                  { return d }
 func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface { return d }
 func (d DummyCtx) SetClock(Clock) CtxInterface                    { return d }
 func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface          { return d }
 func (d DummyCtx) SetLogger(Logger) CtxInterface                  { return d }
-func (d DummyCtx) SetID(string) CtxInterface                      { return d }
-func (d DummyCtx) SetService(string) CtxInterface                 { return d }
 func (d DummyCtx) AcquireThread() ThreadInterface                 { return DummyThread{} }
 func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface     { return d }
 func (d DummyCtx) Debug(string) RecordInterface                   { return DummyRecord{} }

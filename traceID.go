@@ -6,11 +6,13 @@ type LogLevel uint8
 type Flag int
 
 const (
-	LevelDebug LogLevel = iota
-	LevelInfo
-	LevelWarn
-	LevelError
-	LevelFatal
+	LevelDebug LogLevel = 1
+	LevelInfo  LogLevel = 1 << 1
+	LevelWarn  LogLevel = 1 << 2
+	LevelError LogLevel = 1 << 3
+	LevelFatal LogLevel = 1 << 4
+	LevelAsset LogLevel = 1 << 5
+	LogAll              = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelFatal | LevelAsset
 
 	FlagOverwrite Flag = 0
 
@@ -18,13 +20,14 @@ const (
 )
 
 type CtxInterface interface {
+	SetID(string) CtxInterface
+	SetService(string) CtxInterface
 	SetFlag(Flag, bool) CtxInterface
+	Watch(LogLevel) CtxInterface
 	SetBroadcastTimeout(time.Duration) CtxInterface
 	SetClock(Clock) CtxInterface
 	SetMarshaller(Marshaller) CtxInterface
 	SetLogger(Logger) CtxInterface
-	SetService(string) CtxInterface
-	SetID(string) CtxInterface
 	Debug(string) RecordInterface
 	Info(string) RecordInterface
 	Warn(string) RecordInterface
@@ -73,3 +76,5 @@ func (l LogLevel) String() string {
 		return "UNK"
 	}
 }
+
+var _ = FlagOverwrite

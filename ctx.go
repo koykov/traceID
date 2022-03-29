@@ -14,6 +14,7 @@ import (
 
 type Ctx struct {
 	id, svc string
+	lmask   LogLevel
 
 	bit bitset.Bitset
 	bto time.Duration
@@ -33,8 +34,23 @@ func NewCtx() *Ctx {
 	return &ctx
 }
 
+func (c *Ctx) SetID(id string) CtxInterface {
+	c.id = id
+	return c
+}
+
+func (c *Ctx) SetService(svc string) CtxInterface {
+	c.svc = svc
+	return c
+}
+
 func (c *Ctx) SetFlag(flag Flag, value bool) CtxInterface {
 	c.bit.SetBit(int(flag), value)
+	return c
+}
+
+func (c *Ctx) Watch(mask LogLevel) CtxInterface {
+	c.lmask = mask
 	return c
 }
 
@@ -55,16 +71,6 @@ func (c *Ctx) SetMarshaller(m Marshaller) CtxInterface {
 
 func (c *Ctx) SetLogger(l Logger) CtxInterface {
 	c.l = l
-	return c
-}
-
-func (c *Ctx) SetID(id string) CtxInterface {
-	c.id = id
-	return c
-}
-
-func (c *Ctx) SetService(svc string) CtxInterface {
-	c.svc = svc
 	return c
 }
 
@@ -178,6 +184,7 @@ func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
 }
 
 func (c *Ctx) Reset() *Ctx {
+	c.lmask = LogAll
 	c.bit = 0
 	c.bto = 0
 	c.thc = 0

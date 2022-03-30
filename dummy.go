@@ -16,7 +16,7 @@ type DummyCtx struct{}
 func (d DummyCtx) SetID(string) CtxInterface                      { return d }
 func (d DummyCtx) SetService(string) CtxInterface                 { return d }
 func (d DummyCtx) SetFlag(Flag, bool) CtxInterface                { return d }
-func (d DummyCtx) Watch(_ LogLevel) CtxInterface                  { return d }
+func (d DummyCtx) Watch(LogLevel) CtxInterface                    { return d }
 func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface { return d }
 func (d DummyCtx) SetClock(Clock) CtxInterface                    { return d }
 func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface          { return d }
@@ -29,6 +29,7 @@ func (d DummyCtx) Warn(string) RecordInterface                    { return Dummy
 func (d DummyCtx) Error(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Assert(string) RecordInterface                  { return DummyRecord{} }
+func (d DummyCtx) Log(LogLevel, string) RecordInterface           { return DummyRecord{} }
 func (d DummyCtx) Flush() error                                   { return nil }
 
 type DummyThread struct{}

@@ -34,6 +34,7 @@ type CtxInterface interface {
 	Error(string) RecordInterface
 	Fatal(string) RecordInterface
 	Assert(string) RecordInterface
+	Log(LogLevel, string) RecordInterface
 	AcquireThread() ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
 	Flush() error

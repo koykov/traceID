@@ -30,7 +30,7 @@ type Ctx struct {
 }
 
 func NewCtx() *Ctx {
-	ctx := Ctx{}
+	ctx := Ctx{lmask: LogAll}
 	return &ctx
 }
 
@@ -75,33 +75,35 @@ func (c *Ctx) SetLogger(l Logger) CtxInterface {
 }
 
 func (c *Ctx) Debug(msg string) RecordInterface {
-	r := c.record(LevelDebug, msg)
-	return r
+	return c.Log(LevelDebug, msg)
 }
 
 func (c *Ctx) Info(msg string) RecordInterface {
-	r := c.record(LevelInfo, msg)
-	return r
+	return c.Log(LevelInfo, msg)
 }
 
 func (c *Ctx) Warn(msg string) RecordInterface {
-	r := c.record(LevelWarn, msg)
-	return r
+	return c.Log(LevelWarn, msg)
 }
 
 func (c *Ctx) Error(msg string) RecordInterface {
-	r := c.record(LevelError, msg)
-	return r
+	return c.Log(LevelError, msg)
 }
 
 func (c *Ctx) Fatal(msg string) RecordInterface {
-	r := c.record(LevelFatal, msg)
-	return r
+	return c.Log(LevelFatal, msg)
 }
 
 func (c *Ctx) Assert(msg string) RecordInterface {
-	r := c.record(LevelAssert, msg)
-	return r
+	return c.Log(LevelAssert, msg)
+}
+
+func (c *Ctx) Log(mask LogLevel, msg string) RecordInterface {
+	level := c.lmask & mask
+	if level > 0 {
+		return c.record(level, msg)
+	}
+	return DummyRecord{}
 }
 
 func (c *Ctx) record(level LogLevel, msg string) *Record {

@@ -55,6 +55,14 @@ func (t Thread) Fatal(msg string) RecordInterface {
 	return r
 }
 
+func (t Thread) Log(mask LogLevel, msg string) RecordInterface {
+	r := t.newRecord(mask, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
 func (t Thread) AcquireThread() ThreadInterface {
 	ctx := t.indirectCtx()
 	if ctx == nil {
@@ -80,9 +88,13 @@ func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	return &t
 }
 
-func (t Thread) newRecord(level LogLevel, msg string) *Record {
+func (t Thread) newRecord(mask LogLevel, msg string) *Record {
 	ctx := t.indirectCtx()
 	if ctx == nil {
+		return nil
+	}
+	level := ctx.lmask & mask
+	if level == 0 {
 		return nil
 	}
 	r := ctx.newRecord(t.id)

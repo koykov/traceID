@@ -42,6 +42,7 @@ func (t DummyThread) Info(string) RecordInterface                   { return Dum
 func (t DummyThread) Warn(string) RecordInterface                   { return DummyRecord{} }
 func (t DummyThread) Error(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Fatal(string) RecordInterface                  { return DummyRecord{} }
+func (t DummyThread) Log(LogLevel, string) RecordInterface          { return DummyRecord{} }
 func (t DummyThread) Flush() error                                  { return nil }
 func (t DummyThread) AcquireThread() ThreadInterface                { return DummyThread{} }
 func (t DummyThread) AcquireThreadID(uint32) ThreadInterface        { return DummyThread{} }

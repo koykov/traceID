@@ -49,6 +49,7 @@ type ThreadInterface interface {
 	Warn(string) RecordInterface
 	Error(string) RecordInterface
 	Fatal(string) RecordInterface
+	Log(LogLevel, string) RecordInterface
 	AcquireThread() ThreadInterface
 	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface
@@ -77,6 +78,8 @@ func (l LogLevel) String() string {
 		return "ERROR"
 	case LevelFatal:
 		return "FATAL"
+	case LevelAssert:
+		return "ASSERT"
 	default:
 		return "UNK"
 	}

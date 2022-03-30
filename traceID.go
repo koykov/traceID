@@ -36,11 +36,13 @@ type CtxInterface interface {
 	Assert(string) RecordInterface
 	Log(LogLevel, string) RecordInterface
 	AcquireThread() ThreadInterface
+	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
 	Flush() error
 }
 
 type ThreadInterface interface {
+	SetID(uint32) ThreadInterface
 	GetID() uint32
 	Debug(string) RecordInterface
 	Info(string) RecordInterface
@@ -48,6 +50,7 @@ type ThreadInterface interface {
 	Error(string) RecordInterface
 	Fatal(string) RecordInterface
 	AcquireThread() ThreadInterface
+	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface
 	Flush() error
 }

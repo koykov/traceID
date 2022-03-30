@@ -22,6 +22,7 @@ func (d DummyCtx) SetClock(Clock) CtxInterface                    { return d }
 func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface          { return d }
 func (d DummyCtx) SetLogger(Logger) CtxInterface                  { return d }
 func (d DummyCtx) AcquireThread() ThreadInterface                 { return DummyThread{} }
+func (d DummyCtx) AcquireThreadID(uint32) ThreadInterface         { return DummyThread{} }
 func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface     { return d }
 func (d DummyCtx) Debug(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Info(string) RecordInterface                    { return DummyRecord{} }
@@ -34,6 +35,7 @@ func (d DummyCtx) Flush() error                                   { return nil }
 
 type DummyThread struct{}
 
+func (t DummyThread) SetID(uint32) ThreadInterface                  { return t }
 func (t DummyThread) GetID() uint32                                 { return 0 }
 func (t DummyThread) Debug(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Info(string) RecordInterface                   { return DummyRecord{} }
@@ -42,6 +44,7 @@ func (t DummyThread) Error(string) RecordInterface                  { return Dum
 func (t DummyThread) Fatal(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Flush() error                                  { return nil }
 func (t DummyThread) AcquireThread() ThreadInterface                { return DummyThread{} }
+func (t DummyThread) AcquireThreadID(uint32) ThreadInterface        { return DummyThread{} }
 func (t DummyThread) ReleaseThread(ThreadInterface) ThreadInterface { return t }
 
 type DummyRecord struct{}

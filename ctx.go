@@ -170,6 +170,13 @@ func (c *Ctx) AcquireThread() ThreadInterface {
 	return t
 }
 
+func (c *Ctx) AcquireThreadID(id uint32) ThreadInterface {
+	t := c.newThread(0)
+	t.SetID(id)
+	c.log(LevelDebug, "", t.id, nil, false, EntryAcquireThread, 0, 0)
+	return t
+}
+
 func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
 	c.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, 0, 0)
 	return c

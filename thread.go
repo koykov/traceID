@@ -6,6 +6,11 @@ type Thread struct {
 	rt uint32
 }
 
+func (t *Thread) SetID(id uint32) ThreadInterface {
+	t.id = id
+	return t
+}
+
 func (t Thread) GetID() uint32 {
 	return t.id
 }
@@ -58,13 +63,21 @@ func (t Thread) AcquireThread() ThreadInterface {
 	return ctx.newThread(t.id)
 }
 
+func (t Thread) AcquireThreadID(id uint32) ThreadInterface {
+	ctx := t.indirectCtx()
+	if ctx == nil {
+		return DummyThread{}
+	}
+	return ctx.newThread(t.id).SetID(id)
+}
+
 func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	ctx := t.indirectCtx()
 	if ctx == nil {
 		return &t
 	}
 	ctx.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, t.id, 0)
-	return t
+	return &t
 }
 
 func (t Thread) newRecord(level LogLevel, msg string) *Record {

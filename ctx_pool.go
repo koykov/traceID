@@ -6,7 +6,10 @@ type CtxPool struct {
 	p sync.Pool
 }
 
-var CP CtxPool
+var (
+	CP   CtxPool
+	_, _ = AcquireCtx(), ReleaseCtx
+)
 
 func (p *CtxPool) Get() *Ctx {
 	v := p.p.Get()

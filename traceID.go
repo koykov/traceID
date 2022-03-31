@@ -34,7 +34,7 @@ type CtxInterface interface {
 	Error(string) RecordInterface
 	Fatal(string) RecordInterface
 	Assert(string) RecordInterface
-	Log(LogLevel, string) RecordInterface
+	Trace(LogLevel, string) RecordInterface
 	AcquireThread() ThreadInterface
 	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
@@ -50,7 +50,7 @@ type ThreadInterface interface {
 	Error(string) RecordInterface
 	Fatal(string) RecordInterface
 	Assert(string) RecordInterface
-	Log(LogLevel, string) RecordInterface
+	Trace(LogLevel, string) RecordInterface
 	AcquireThread() ThreadInterface
 	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface

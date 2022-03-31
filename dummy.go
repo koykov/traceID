@@ -30,7 +30,7 @@ func (d DummyCtx) Warn(string) RecordInterface                    { return Dummy
 func (d DummyCtx) Error(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Assert(string) RecordInterface                  { return DummyRecord{} }
-func (d DummyCtx) Log(LogLevel, string) RecordInterface           { return DummyRecord{} }
+func (d DummyCtx) Trace(LogLevel, string) RecordInterface         { return DummyRecord{} }
 func (d DummyCtx) Flush() error                                   { return nil }
 
 type DummyThread struct{}
@@ -43,7 +43,7 @@ func (t DummyThread) Warn(string) RecordInterface                   { return Dum
 func (t DummyThread) Error(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Fatal(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Assert(string) RecordInterface                 { return DummyRecord{} }
-func (t DummyThread) Log(LogLevel, string) RecordInterface          { return DummyRecord{} }
+func (t DummyThread) Trace(LogLevel, string) RecordInterface        { return DummyRecord{} }
 func (t DummyThread) Flush() error                                  { return nil }
 func (t DummyThread) AcquireThread() ThreadInterface                { return DummyThread{} }
 func (t DummyThread) AcquireThreadID(uint32) ThreadInterface        { return DummyThread{} }

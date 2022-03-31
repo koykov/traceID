@@ -76,30 +76,30 @@ func (c *Ctx) SetLogger(l Logger) CtxInterface {
 }
 
 func (c *Ctx) Debug(msg string) RecordInterface {
-	return c.Log(LevelDebug, msg)
+	return c.Trace(LevelDebug, msg)
 }
 
 func (c *Ctx) Info(msg string) RecordInterface {
-	return c.Log(LevelInfo, msg)
+	return c.Trace(LevelInfo, msg)
 }
 
 func (c *Ctx) Warn(msg string) RecordInterface {
-	return c.Log(LevelWarn, msg)
+	return c.Trace(LevelWarn, msg)
 }
 
 func (c *Ctx) Error(msg string) RecordInterface {
-	return c.Log(LevelError, msg)
+	return c.Trace(LevelError, msg)
 }
 
 func (c *Ctx) Fatal(msg string) RecordInterface {
-	return c.Log(LevelFatal, msg)
+	return c.Trace(LevelFatal, msg)
 }
 
 func (c *Ctx) Assert(msg string) RecordInterface {
-	return c.Log(LevelAssert, msg)
+	return c.Trace(LevelAssert, msg)
 }
 
-func (c *Ctx) Log(mask LogLevel, msg string) RecordInterface {
+func (c *Ctx) Trace(mask LogLevel, msg string) RecordInterface {
 	level := c.lmask & mask
 	if level > 0 {
 		return c.record(level, msg)

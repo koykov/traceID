@@ -11,6 +11,7 @@ import (
 )
 
 func Encode(ctx *Ctx) []byte {
+	ctx.flushDL()
 	poff := len(ctx.buf)
 	size := ctx.size()
 	ctx.buf = bytealg.GrowDelta(ctx.buf, size)

@@ -22,6 +22,18 @@ type entry struct {
 	k, v Entry64
 }
 
+// Deferred entry.
+type dentry struct {
+	ll  LogLevel
+	tp  EntryType
+	tt  int64
+	tid uint32
+	rid uint32
+	k   string
+	v   interface{}
+	opt []optionKV
+}
+
 func (e EntryType) String() string {
 	switch e {
 	case EntryLog:

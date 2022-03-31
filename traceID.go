@@ -58,9 +58,8 @@ type ThreadInterface interface {
 
 type RecordInterface interface {
 	Var(string, interface{}) RecordInterface
-	VarWithOptions(string, interface{}, Options) RecordInterface
 	VarIf(bool, string, interface{}) RecordInterface
-	VarWithOptionsIf(bool, string, interface{}, Options) RecordInterface
+	With(Option, interface{}) RecordInterface
 	Err(error) RecordInterface
 	ErrIf(bool, error) RecordInterface
 	Flush() error

@@ -1,7 +1,13 @@
 package traceID
 
-type Options struct {
-	Marshaller Marshaller
-	DEQ        DEQ
-	Indent     bool
+const (
+	OptionMarshaller Option = "marshaller"
+	OptionIndent     Option = "indent"
+)
+
+type Option string
+
+type optionKV struct {
+	k Option
+	v interface{}
 }

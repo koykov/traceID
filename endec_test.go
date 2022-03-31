@@ -72,7 +72,7 @@ func TestEndec(t *testing.T) {
 			Var("example_1", 2).
 			Var("example_2", 3.1415).
 			Var("example_3", "foobar").
-			VarWithOptions("example_4", struct {
+			Var("example_4", struct {
 				A int32   `json:"a"`
 				B float64 `json:"b"`
 				C []byte  `json:"cl"`
@@ -84,7 +84,7 @@ func TestEndec(t *testing.T) {
 				C: []byte("qwerty"),
 				D: "asdfgh",
 				E: true,
-			}, Options{Indent: true})
+			}).With(OptionIndent, true)
 		cb := Encode(ctx)
 		if *pb {
 			printBytes(cb)

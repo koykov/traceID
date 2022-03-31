@@ -11,16 +11,7 @@ func (r Record) Var(name string, val interface{}) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
-	ctx.log(LevelDebug, name, val, nil, false, EntryLog, r.thid, r.id)
-	return &r
-}
-
-func (r Record) VarWithOptions(name string, val interface{}, opts Options) RecordInterface {
-	ctx := r.indirectCtx()
-	if ctx == nil {
-		return &r
-	}
-	ctx.log(LevelDebug, name, val, opts.Marshaller, opts.Indent, EntryLog, r.thid, r.id)
+	ctx.dlog(LevelDebug, name, val, EntryLog, r.thid, r.id)
 	return &r
 }
 
@@ -31,11 +22,13 @@ func (r Record) VarIf(cond bool, name string, val interface{}) RecordInterface {
 	return r.Var(name, val)
 }
 
-func (r Record) VarWithOptionsIf(cond bool, name string, val interface{}, opts Options) RecordInterface {
-	if !cond {
+func (r Record) With(name Option, value interface{}) RecordInterface {
+	ctx := r.indirectCtx()
+	if ctx == nil {
 		return &r
 	}
-	return r.VarWithOptions(name, val, opts)
+	ctx.addOpt(r.id, name, value)
+	return &r
 }
 
 func (r Record) Err(err error) RecordInterface {
@@ -43,7 +36,7 @@ func (r Record) Err(err error) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
-	ctx.log(LevelDebug, "", err.Error(), nil, false, EntryLog, r.thid, r.id)
+	ctx.dlog(LevelDebug, "", err.Error(), EntryLog, r.thid, r.id)
 	return &r
 }
 

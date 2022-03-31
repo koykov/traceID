@@ -22,6 +22,7 @@ type Ctx struct {
 	rc  uint32
 	mux sync.Mutex
 	lb  []entry
+	dlb []dentry
 	buf []byte
 	m   Marshaller
 	l   Logger
@@ -112,6 +113,31 @@ func (c *Ctx) record(level LogLevel, msg string) *Record {
 	return r
 }
 
+func (c *Ctx) dlog(level LogLevel, name string, val interface{}, typ EntryType, tid, rid uint32) {
+	c.lock()
+	c.flushDL()
+	c.dlogLF(level, name, val, typ, tid, rid)
+	c.unlock()
+}
+
+func (c *Ctx) dlogLF(level LogLevel, name string, val interface{}, typ EntryType, tid, rid uint32) {
+	var tt int64
+	if c.cl != nil {
+		tt = c.cl.Now().UnixNano()
+	} else {
+		tt = time.Now().UnixNano()
+	}
+	c.dlb = append(c.dlb, dentry{
+		ll:  level,
+		tp:  typ,
+		tt:  tt,
+		tid: tid,
+		rid: rid,
+		k:   name,
+		v:   val,
+	})
+}
+
 func (c *Ctx) log(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
 	c.lock()
 	c.logLF(level, name, val, m, ind, typ, tid, rid)
@@ -153,6 +179,38 @@ func (c *Ctx) logLF(level LogLevel, name string, val interface{}, m Marshaller, 
 		c.l.Printf("[%s/%s] thread %d; record %d; key '%s'; %s\n",
 			level.String(), typ.String(), tid, rid, name, fastconv.B2S(c.buf[off:]))
 	}
+}
+
+func (c *Ctx) addOpt(rid uint32, name Option, value interface{}) {
+	c.mux.Lock()
+	defer c.mux.Unlock()
+	for i := 0; i < len(c.dlb); i++ {
+		e := &c.dlb[i]
+		if e.rid == rid {
+			e.opt = append(e.opt, optionKV{k: name, v: value})
+		}
+	}
+}
+
+func (c *Ctx) flushDL() {
+	for i := 0; i < len(c.dlb); i++ {
+		e := &c.dlb[i]
+		var (
+			m   Marshaller
+			ind bool
+		)
+		for j := 0; j < len(e.opt); j++ {
+			o := &e.opt[j]
+			switch o.k {
+			case OptionMarshaller:
+				m, _ = o.v.(Marshaller)
+			case OptionIndent:
+				ind, _ = o.v.(bool)
+			}
+		}
+		c.logLF(e.ll, e.k, e.v, m, ind, e.tp, e.tid, e.rid)
+	}
+	c.dlb = c.dlb[:0]
 }
 
 func (c *Ctx) Flush() (err error) {
@@ -197,6 +255,7 @@ func (c *Ctx) Reset() *Ctx {
 
 func (c *Ctx) resetBuf() {
 	c.lb = c.lb[:0]
+	c.dlb = c.dlb[:0]
 	c.buf = c.buf[:0]
 }
 

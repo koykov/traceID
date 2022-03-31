@@ -50,12 +50,12 @@ func (t DummyThread) ReleaseThread(ThreadInterface) ThreadInterface { return t }
 
 type DummyRecord struct{}
 
-func (r DummyRecord) Var(string, interface{}) RecordInterface                             { return &r }
-func (r DummyRecord) VarWithOptions(string, interface{}, Options) RecordInterface         { return &r }
-func (r DummyRecord) VarIf(bool, string, interface{}) RecordInterface                     { return &r }
-func (r DummyRecord) VarWithOptionsIf(bool, string, interface{}, Options) RecordInterface { return &r }
-func (r DummyRecord) Err(error) RecordInterface                                           { return &r }
-func (r DummyRecord) ErrIf(bool, error) RecordInterface                                   { return &r }
+func (r DummyRecord) Var(string, interface{}) RecordInterface                             { return r }
+func (r DummyRecord) VarWithOptions(string, interface{}, Options) RecordInterface         { return r }
+func (r DummyRecord) VarIf(bool, string, interface{}) RecordInterface                     { return r }
+func (r DummyRecord) VarWithOptionsIf(bool, string, interface{}, Options) RecordInterface { return r }
+func (r DummyRecord) Err(error) RecordInterface                                           { return r }
+func (r DummyRecord) ErrIf(bool, error) RecordInterface                                   { return r }
 func (r DummyRecord) Flush() error                                                        { return nil }
 
 type DummyBroadcast struct{}

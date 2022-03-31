@@ -49,6 +49,7 @@ type ThreadInterface interface {
 	Warn(string) RecordInterface
 	Error(string) RecordInterface
 	Fatal(string) RecordInterface
+	Assert(string) RecordInterface
 	Log(LogLevel, string) RecordInterface
 	AcquireThread() ThreadInterface
 	AcquireThreadID(uint32) ThreadInterface

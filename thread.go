@@ -55,6 +55,14 @@ func (t Thread) Fatal(msg string) RecordInterface {
 	return r
 }
 
+func (t Thread) Assert(msg string) RecordInterface {
+	r := t.newRecord(LevelAssert, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
 func (t Thread) Log(mask LogLevel, msg string) RecordInterface {
 	r := t.newRecord(mask, msg)
 	if r == nil {

@@ -63,7 +63,7 @@ func (t Thread) Assert(msg string) RecordInterface {
 	return r
 }
 
-func (t Thread) Trace(mask LogLevel, msg string) RecordInterface {
+func (t Thread) Trace(mask Level, msg string) RecordInterface {
 	r := t.newRecord(mask, msg)
 	if r == nil {
 		return DummyRecord{}
@@ -96,7 +96,7 @@ func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	return &t
 }
 
-func (t Thread) newRecord(mask LogLevel, msg string) *Record {
+func (t Thread) newRecord(mask Level, msg string) *Record {
 	ctx := t.indirectCtx()
 	if ctx == nil {
 		return nil

@@ -14,7 +14,7 @@ const (
 )
 
 type entry struct {
-	ll   LogLevel
+	ll   Level
 	tp   EntryType
 	tt   int64
 	tid  uint32
@@ -24,7 +24,7 @@ type entry struct {
 
 // Deferred entry.
 type dentry struct {
-	ll  LogLevel
+	ll  Level
 	tp  EntryType
 	tt  int64
 	tid uint32

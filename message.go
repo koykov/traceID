@@ -6,7 +6,7 @@ import (
 )
 
 type MessageRow struct {
-	Level    LogLevel
+	Level    Level
 	Type     EntryType
 	Time     int64
 	ThreadID uint32

@@ -103,7 +103,7 @@ func Decode(p []byte, x *Message) error {
 		if len(p[off:]) < 30 {
 			return ErrPacketTooShort
 		}
-		ll := LogLevel(p[off])
+		ll := Level(p[off])
 		off++
 		tp := EntryType(p[off])
 		off++

@@ -16,7 +16,7 @@ type DummyCtx struct{}
 func (d DummyCtx) SetID(string) CtxInterface                      { return d }
 func (d DummyCtx) SetService(string) CtxInterface                 { return d }
 func (d DummyCtx) SetFlag(Flag, bool) CtxInterface                { return d }
-func (d DummyCtx) Watch(LogLevel) CtxInterface                    { return d }
+func (d DummyCtx) Watch(Level) CtxInterface                       { return d }
 func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface { return d }
 func (d DummyCtx) SetClock(Clock) CtxInterface                    { return d }
 func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface          { return d }
@@ -30,7 +30,7 @@ func (d DummyCtx) Warn(string) RecordInterface                    { return Dummy
 func (d DummyCtx) Error(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Assert(string) RecordInterface                  { return DummyRecord{} }
-func (d DummyCtx) Trace(LogLevel, string) RecordInterface         { return DummyRecord{} }
+func (d DummyCtx) Trace(Level, string) RecordInterface            { return DummyRecord{} }
 func (d DummyCtx) Flush() error                                   { return nil }
 
 type DummyThread struct{}
@@ -43,7 +43,7 @@ func (t DummyThread) Warn(string) RecordInterface                   { return Dum
 func (t DummyThread) Error(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Fatal(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Assert(string) RecordInterface                 { return DummyRecord{} }
-func (t DummyThread) Trace(LogLevel, string) RecordInterface        { return DummyRecord{} }
+func (t DummyThread) Trace(Level, string) RecordInterface           { return DummyRecord{} }
 func (t DummyThread) Flush() error                                  { return nil }
 func (t DummyThread) AcquireThread() ThreadInterface                { return DummyThread{} }
 func (t DummyThread) AcquireThreadID(uint32) ThreadInterface        { return DummyThread{} }

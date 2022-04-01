@@ -14,7 +14,7 @@ import (
 
 type Ctx struct {
 	id, svc string
-	lmask   LogLevel
+	lmask   Level
 
 	bit bitset.Bitset
 	bto time.Duration
@@ -50,7 +50,7 @@ func (c *Ctx) SetFlag(flag Flag, value bool) CtxInterface {
 	return c
 }
 
-func (c *Ctx) Watch(mask LogLevel) CtxInterface {
+func (c *Ctx) Watch(mask Level) CtxInterface {
 	c.lmask = mask
 	return c
 }
@@ -99,7 +99,7 @@ func (c *Ctx) Assert(msg string) RecordInterface {
 	return c.Trace(LevelAssert, msg)
 }
 
-func (c *Ctx) Trace(mask LogLevel, msg string) RecordInterface {
+func (c *Ctx) Trace(mask Level, msg string) RecordInterface {
 	level := c.lmask & mask
 	if level > 0 {
 		return c.record(level, msg)
@@ -107,20 +107,20 @@ func (c *Ctx) Trace(mask LogLevel, msg string) RecordInterface {
 	return DummyRecord{}
 }
 
-func (c *Ctx) record(level LogLevel, msg string) *Record {
+func (c *Ctx) record(level Level, msg string) *Record {
 	r := c.newRecord(0)
 	c.log(level, "", msg, nil, false, EntryChapter, 0, r.id)
 	return r
 }
 
-func (c *Ctx) dlog(level LogLevel, name string, val interface{}, typ EntryType, tid, rid uint32) {
+func (c *Ctx) dlog(level Level, name string, val interface{}, typ EntryType, tid, rid uint32) {
 	c.lock()
 	c.flushDL()
 	c.dlogLF(level, name, val, typ, tid, rid)
 	c.unlock()
 }
 
-func (c *Ctx) dlogLF(level LogLevel, name string, val interface{}, typ EntryType, tid, rid uint32) {
+func (c *Ctx) dlogLF(level Level, name string, val interface{}, typ EntryType, tid, rid uint32) {
 	var tt int64
 	if c.cl != nil {
 		tt = c.cl.Now().UnixNano()
@@ -138,13 +138,13 @@ func (c *Ctx) dlogLF(level LogLevel, name string, val interface{}, typ EntryType
 	})
 }
 
-func (c *Ctx) log(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
+func (c *Ctx) log(level Level, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
 	c.lock()
 	c.logLF(level, name, val, m, ind, typ, tid, rid)
 	c.unlock()
 }
 
-func (c *Ctx) logLF(level LogLevel, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
+func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
 	off := len(c.buf)
 	var k Entry64
 	if l := len(name); l > 0 {

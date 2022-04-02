@@ -34,6 +34,17 @@ type dentry struct {
 	opt []optionKV
 }
 
+func (d *dentry) reset() {
+	d.ll = 0
+	d.tp = 0
+	d.tt = 0
+	d.tid = 0
+	d.rid = 0
+	d.k = ""
+	d.v = nil
+	d.opt = d.opt[:0]
+}
+
 func (e EntryType) String() string {
 	switch e {
 	case EntryLog:

@@ -1,5 +1,7 @@
 package traceID
 
+import "github.com/koykov/indirect"
+
 type ctxHeir struct {
 	cp uintptr
 }
@@ -22,5 +24,6 @@ func (h ctxHeir) indirectCtx() *Ctx {
 	if h.cp == 0 {
 		return nil
 	}
-	return indirectCtx(h.cp)
+	up := indirect.ToUnsafePtr(h.cp)
+	return (*Ctx)(up)
 }

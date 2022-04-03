@@ -106,6 +106,6 @@ func (t Thread) newRecord(mask Level, msg string) *Record {
 		return nil
 	}
 	r := ctx.newRecord(t.id)
-	ctx.log(level, "", msg, nil, false, EntryChapter, t.id, r.id)
+	r.lp = ctx.log(level, "", msg, nil, false, EntryChapter, t.id, r.id)
 	return r
 }

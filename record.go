@@ -1,8 +1,12 @@
 package traceID
 
+import "github.com/koykov/indirect"
+
 type Record struct {
 	ctxHeir
 	id   uint32
+	lp   uintptr
+	dp   uintptr
 	thid uint32
 }
 
@@ -11,7 +15,7 @@ func (r Record) Var(name string, val interface{}) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
-	ctx.dlog(LevelDebug, name, val, EntryLog, r.thid, r.id)
+	r.dp = ctx.dlog(LevelDebug, name, val, EntryLog, r.thid, r.id)
 	return &r
 }
 
@@ -27,7 +31,10 @@ func (r Record) With(name Option, value interface{}) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
-	ctx.addOpt(r.id, name, value)
+	ctx.mux.Lock()
+	defer ctx.mux.Unlock()
+	e := (*dentry)(indirect.ToUnsafePtr(r.dp))
+	e.opt = append(e.opt, optionKV{k: name, v: value})
 	return &r
 }
 
@@ -36,7 +43,7 @@ func (r Record) Err(err error) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
-	ctx.dlog(LevelDebug, "", err.Error(), EntryLog, r.thid, r.id)
+	r.dp = ctx.dlog(LevelDebug, "", err.Error(), EntryLog, r.thid, r.id)
 	return &r
 }
 

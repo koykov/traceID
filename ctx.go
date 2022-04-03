@@ -110,18 +110,19 @@ func (c *Ctx) Trace(mask Level, msg string) RecordInterface {
 
 func (c *Ctx) record(level Level, msg string) *Record {
 	r := c.newRecord(0)
-	c.log(level, "", msg, nil, false, EntryChapter, 0, r.id)
+	r.lp = c.log(level, "", msg, nil, false, EntryChapter, 0, r.id)
 	return r
 }
 
-func (c *Ctx) dlog(level Level, name string, val interface{}, typ EntryType, tid, rid uint32) {
+func (c *Ctx) dlog(level Level, name string, val interface{}, typ EntryType, tid, rid uint32) (dp uintptr) {
 	c.lock()
 	c.flushDL()
-	c.dlogLF(level, name, val, typ, tid, rid)
+	dp = c.dlogLF(level, name, val, typ, tid, rid)
 	c.unlock()
+	return
 }
 
-func (c *Ctx) dlogLF(level Level, name string, val interface{}, typ EntryType, tid, rid uint32) {
+func (c *Ctx) dlogLF(level Level, name string, val interface{}, typ EntryType, tid, rid uint32) (dp uintptr) {
 	var tt int64
 	if c.cl != nil {
 		tt = c.cl.Now().UnixNano()
@@ -136,6 +137,8 @@ func (c *Ctx) dlogLF(level Level, name string, val interface{}, typ EntryType, t
 	e.rid = rid
 	e.k = name
 	e.v = val
+	dp = uintptr(unsafe.Pointer(e))
+	return
 }
 
 func (c *Ctx) dlogAcqLF() (e *dentry) {
@@ -149,13 +152,14 @@ func (c *Ctx) dlogAcqLF() (e *dentry) {
 	return
 }
 
-func (c *Ctx) log(level Level, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
+func (c *Ctx) log(level Level, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) (lp uintptr) {
 	c.lock()
-	c.logLF(level, name, val, m, ind, typ, tid, rid)
+	lp = c.logLF(level, name, val, m, ind, typ, tid, rid)
 	c.unlock()
+	return
 }
 
-func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) {
+func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) (lp uintptr) {
 	off := len(c.buf)
 	var k Entry64
 	if l := len(name); l > 0 {
@@ -190,17 +194,7 @@ func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind
 		c.l.Printf("[%s/%s] thread %d; record %d; key '%s'; %s\n",
 			level.String(), typ.String(), tid, rid, name, fastconv.B2S(c.buf[off:]))
 	}
-}
-
-func (c *Ctx) addOpt(rid uint32, name Option, value interface{}) {
-	c.mux.Lock()
-	defer c.mux.Unlock()
-	for i := 0; i < len(c.dlb); i++ {
-		e := &c.dlb[i]
-		if e.rid == rid {
-			e.opt = append(e.opt, optionKV{k: name, v: value})
-		}
-	}
+	return uintptr(unsafe.Pointer(&c.lb[len(c.lb)-1]))
 }
 
 func (c *Ctx) flushDL() {

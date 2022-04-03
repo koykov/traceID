@@ -58,6 +58,7 @@ type ThreadInterface interface {
 }
 
 type RecordInterface interface {
+	Slug(string) RecordInterface
 	Var(string, interface{}) RecordInterface
 	VarIf(bool, string, interface{}) RecordInterface
 	With(Option, interface{}) RecordInterface

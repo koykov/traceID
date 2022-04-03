@@ -10,6 +10,21 @@ type Record struct {
 	thid uint32
 }
 
+func (r Record) Slug(slug string) RecordInterface {
+	ctx := r.indirectCtx()
+	if ctx == nil {
+		return &r
+	}
+	ctx.mux.Lock()
+	defer ctx.mux.Unlock()
+	e := (*entry)(indirect.ToUnsafePtr(r.lp))
+	lo := len(ctx.buf)
+	ctx.buf = append(ctx.buf, slug...)
+	hi := len(ctx.buf)
+	e.k.Encode(uint32(lo), uint32(hi))
+	return &r
+}
+
 func (r Record) Var(name string, val interface{}) RecordInterface {
 	ctx := r.indirectCtx()
 	if ctx == nil {

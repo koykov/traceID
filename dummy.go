@@ -51,6 +51,7 @@ func (t DummyThread) ReleaseThread(ThreadInterface) ThreadInterface { return t }
 
 type DummyRecord struct{}
 
+func (r DummyRecord) Slug(string) RecordInterface                     { return r }
 func (r DummyRecord) Var(string, interface{}) RecordInterface         { return r }
 func (r DummyRecord) VarIf(bool, string, interface{}) RecordInterface { return r }
 func (r DummyRecord) With(Option, interface{}) RecordInterface        { return r }

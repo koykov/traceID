@@ -17,6 +17,9 @@ func (r Record) Slug(slug string) RecordInterface {
 	}
 	ctx.mux.Lock()
 	defer ctx.mux.Unlock()
+	if r.lp == 0 {
+		return &r
+	}
 	e := (*entry)(indirect.ToUnsafePtr(r.lp))
 	lo := len(ctx.buf)
 	ctx.buf = append(ctx.buf, slug...)
@@ -48,6 +51,9 @@ func (r Record) With(name Option, value interface{}) RecordInterface {
 	}
 	ctx.mux.Lock()
 	defer ctx.mux.Unlock()
+	if r.dp == 0 {
+		return &r
+	}
 	e := (*dentry)(indirect.ToUnsafePtr(r.dp))
 	e.opt = append(e.opt, optionKV{k: name, v: value})
 	return &r

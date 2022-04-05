@@ -12,7 +12,7 @@ const (
 	LevelError  Level = 1 << 3
 	LevelFatal  Level = 1 << 4
 	LevelAssert Level = 1 << 5
-	LogAll            = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelFatal | LevelAssert
+	LevelAll          = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelFatal | LevelAssert
 
 	FlagOverwrite Flag = 0
 

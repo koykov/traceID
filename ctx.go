@@ -32,7 +32,7 @@ type Ctx struct {
 }
 
 func NewCtx() *Ctx {
-	ctx := Ctx{lmask: LogAll}
+	ctx := Ctx{lmask: LevelAll}
 	return &ctx
 }
 
@@ -246,7 +246,7 @@ func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
 }
 
 func (c *Ctx) Reset() *Ctx {
-	c.lmask = LogAll
+	c.lmask = LevelAll
 	c.bit = 0
 	c.bto = 0
 	c.thc = 0

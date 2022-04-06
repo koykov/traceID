@@ -39,6 +39,7 @@ type CtxInterface interface {
 	AcquireThread() ThreadInterface
 	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
+	IsDummy() bool
 	Flush() error
 }
 

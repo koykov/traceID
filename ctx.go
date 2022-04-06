@@ -218,6 +218,10 @@ func (c *Ctx) flushDL() {
 	c.dlb = c.dlb[:0]
 }
 
+func (c *Ctx) IsDummy() bool {
+	return false
+}
+
 func (c *Ctx) Flush() (err error) {
 	c.lock()
 	message := Encode(c)

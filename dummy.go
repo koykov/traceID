@@ -31,6 +31,7 @@ func (d DummyCtx) Error(string) RecordInterface                   { return Dummy
 func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Assert(string) RecordInterface                  { return DummyRecord{} }
 func (d DummyCtx) Trace(Level, string) RecordInterface            { return DummyRecord{} }
+func (d DummyCtx) IsDummy() bool                                  { return true }
 func (d DummyCtx) Flush() error                                   { return nil }
 
 type DummyThread struct{}

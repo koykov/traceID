@@ -6,13 +6,14 @@ type Level uint8
 type Flag int
 
 const (
-	LevelDebug  Level = 1
-	LevelInfo   Level = 1 << 1
-	LevelWarn   Level = 1 << 2
-	LevelError  Level = 1 << 3
-	LevelFatal  Level = 1 << 4
-	LevelAssert Level = 1 << 5
-	LevelAll          = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelFatal | LevelAssert
+	LevelDebug   Level = 1
+	LevelInfo    Level = 1 << 1
+	LevelWarn    Level = 1 << 2
+	LevelError   Level = 1 << 3
+	LevelFatal   Level = 1 << 4
+	LevelAssert  Level = 1 << 5
+	LevelComment Level = 1 << 6
+	LevelAll           = LevelDebug | LevelInfo | LevelWarn | LevelError | LevelFatal | LevelAssert | LevelComment
 
 	FlagOverwrite Flag = 0
 
@@ -64,6 +65,7 @@ type RecordInterface interface {
 	With(Option, interface{}) RecordInterface
 	Err(error) RecordInterface
 	ErrIf(bool, error) RecordInterface
+	Comment(string) RecordInterface
 	Flush() error
 }
 

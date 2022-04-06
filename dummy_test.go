@@ -25,6 +25,7 @@ func BenchmarkDummy(b *testing.B) {
 			dc.Warn("trace2").
 				Slug("t2").
 				Var("v3", math.MaxFloat64).
+				Comment("something went strange").
 				Var("v4", -15)
 		}
 	})

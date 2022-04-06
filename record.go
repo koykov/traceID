@@ -74,3 +74,12 @@ func (r Record) ErrIf(cond bool, err error) RecordInterface {
 	}
 	return r.Err(err)
 }
+
+func (r Record) Comment(msg string) RecordInterface {
+	ctx := r.indirectCtx()
+	if ctx == nil {
+		return &r
+	}
+	r.dp = ctx.dlog(LevelComment, "", msg, EntryLog, r.thid, r.id)
+	return &r
+}

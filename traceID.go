@@ -36,6 +36,13 @@ type CtxInterface interface {
 	Fatal(string) RecordInterface
 	Assert(string) RecordInterface
 	Trace(Level, string) RecordInterface
+	DebugIf(bool, string) RecordInterface
+	InfoIf(bool, string) RecordInterface
+	WarnIf(bool, string) RecordInterface
+	ErrorIf(bool, string) RecordInterface
+	FatalIf(bool, string) RecordInterface
+	AssertIf(bool, string) RecordInterface
+	TraceIf(bool, Level, string) RecordInterface
 	AcquireThread() ThreadInterface
 	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) CtxInterface
@@ -53,6 +60,13 @@ type ThreadInterface interface {
 	Fatal(string) RecordInterface
 	Assert(string) RecordInterface
 	Trace(Level, string) RecordInterface
+	DebugIf(bool, string) RecordInterface
+	InfoIf(bool, string) RecordInterface
+	WarnIf(bool, string) RecordInterface
+	ErrorIf(bool, string) RecordInterface
+	FatalIf(bool, string) RecordInterface
+	AssertIf(bool, string) RecordInterface
+	TraceIf(bool, Level, string) RecordInterface
 	AcquireThread() ThreadInterface
 	AcquireThreadID(uint32) ThreadInterface
 	ReleaseThread(ThreadInterface) ThreadInterface

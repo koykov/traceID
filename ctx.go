@@ -108,6 +108,41 @@ func (c *Ctx) Trace(mask Level, msg string) RecordInterface {
 	return DummyRecord{}
 }
 
+func (c *Ctx) DebugIf(cond bool, msg string) RecordInterface {
+	return c.TraceIf(cond, LevelDebug, msg)
+}
+
+func (c *Ctx) InfoIf(cond bool, msg string) RecordInterface {
+	return c.TraceIf(cond, LevelInfo, msg)
+}
+
+func (c *Ctx) WarnIf(cond bool, msg string) RecordInterface {
+	return c.TraceIf(cond, LevelWarn, msg)
+}
+
+func (c *Ctx) ErrorIf(cond bool, msg string) RecordInterface {
+	return c.TraceIf(cond, LevelError, msg)
+}
+
+func (c *Ctx) FatalIf(cond bool, msg string) RecordInterface {
+	return c.TraceIf(cond, LevelFatal, msg)
+}
+
+func (c *Ctx) AssertIf(cond bool, msg string) RecordInterface {
+	return c.TraceIf(cond, LevelAssert, msg)
+}
+
+func (c *Ctx) TraceIf(cond bool, mask Level, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	level := c.lmask & mask
+	if level > 0 {
+		return c.record(level, msg)
+	}
+	return DummyRecord{}
+}
+
 func (c *Ctx) record(level Level, msg string) *Record {
 	r := c.newRecord(0)
 	r.lp = c.log(level, "", msg, nil, false, EntryChapter, 0, r.id)

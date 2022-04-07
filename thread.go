@@ -71,6 +71,83 @@ func (t Thread) Trace(mask Level, msg string) RecordInterface {
 	return r
 }
 
+func (t Thread) DebugIf(cond bool, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	r := t.newRecord(LevelDebug, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (t Thread) InfoIf(cond bool, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	r := t.newRecord(LevelInfo, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (t Thread) WarnIf(cond bool, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	r := t.newRecord(LevelWarn, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (t Thread) ErrorIf(cond bool, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	r := t.newRecord(LevelError, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (t Thread) FatalIf(cond bool, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	r := t.newRecord(LevelFatal, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (t Thread) AssertIf(cond bool, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	r := t.newRecord(LevelAssert, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
+func (t Thread) TraceIf(cond bool, mask Level, msg string) RecordInterface {
+	if !cond {
+		return DummyRecord{}
+	}
+	r := t.newRecord(mask, msg)
+	if r == nil {
+		return DummyRecord{}
+	}
+	return r
+}
+
 func (t Thread) AcquireThread() ThreadInterface {
 	ctx := t.indirectCtx()
 	if ctx == nil {

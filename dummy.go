@@ -31,6 +31,13 @@ func (d DummyCtx) Error(string) RecordInterface                   { return Dummy
 func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
 func (d DummyCtx) Assert(string) RecordInterface                  { return DummyRecord{} }
 func (d DummyCtx) Trace(Level, string) RecordInterface            { return DummyRecord{} }
+func (d DummyCtx) DebugIf(bool, string) RecordInterface           { return DummyRecord{} }
+func (d DummyCtx) InfoIf(bool, string) RecordInterface            { return DummyRecord{} }
+func (d DummyCtx) WarnIf(bool, string) RecordInterface            { return DummyRecord{} }
+func (d DummyCtx) ErrorIf(bool, string) RecordInterface           { return DummyRecord{} }
+func (d DummyCtx) FatalIf(bool, string) RecordInterface           { return DummyRecord{} }
+func (d DummyCtx) AssertIf(bool, string) RecordInterface          { return DummyRecord{} }
+func (d DummyCtx) TraceIf(bool, Level, string) RecordInterface    { return DummyRecord{} }
 func (d DummyCtx) IsDummy() bool                                  { return true }
 func (d DummyCtx) Flush() error                                   { return nil }
 
@@ -45,6 +52,13 @@ func (t DummyThread) Error(string) RecordInterface                  { return Dum
 func (t DummyThread) Fatal(string) RecordInterface                  { return DummyRecord{} }
 func (t DummyThread) Assert(string) RecordInterface                 { return DummyRecord{} }
 func (t DummyThread) Trace(Level, string) RecordInterface           { return DummyRecord{} }
+func (t DummyThread) DebugIf(bool, string) RecordInterface          { return DummyRecord{} }
+func (t DummyThread) InfoIf(bool, string) RecordInterface           { return DummyRecord{} }
+func (t DummyThread) WarnIf(bool, string) RecordInterface           { return DummyRecord{} }
+func (t DummyThread) ErrorIf(bool, string) RecordInterface          { return DummyRecord{} }
+func (t DummyThread) FatalIf(bool, string) RecordInterface          { return DummyRecord{} }
+func (t DummyThread) AssertIf(bool, string) RecordInterface         { return DummyRecord{} }
+func (t DummyThread) TraceIf(bool, Level, string) RecordInterface   { return DummyRecord{} }
 func (t DummyThread) Flush() error                                  { return nil }
 func (t DummyThread) AcquireThread() ThreadInterface                { return DummyThread{} }
 func (t DummyThread) AcquireThreadID(uint32) ThreadInterface        { return DummyThread{} }

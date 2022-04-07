@@ -59,6 +59,7 @@ func (r DummyRecord) With(Option, interface{}) RecordInterface        { return r
 func (r DummyRecord) Err(error) RecordInterface                       { return r }
 func (r DummyRecord) ErrIf(bool, error) RecordInterface               { return r }
 func (r DummyRecord) Comment(string) RecordInterface                  { return r }
+func (r DummyRecord) CommentIf(bool, string) RecordInterface          { return r }
 func (r DummyRecord) Flush() error                                    { return nil }
 
 type DummyBroadcast struct{}

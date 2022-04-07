@@ -67,6 +67,7 @@ type RecordInterface interface {
 	Err(error) RecordInterface
 	ErrIf(bool, error) RecordInterface
 	Comment(string) RecordInterface
+	CommentIf(bool, string) RecordInterface
 	Flush() error
 }
 

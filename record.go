@@ -83,3 +83,10 @@ func (r Record) Comment(msg string) RecordInterface {
 	r.dp = ctx.dlog(LevelComment, "", msg, EntryLog, r.thid, r.id)
 	return &r
 }
+
+func (r Record) CommentIf(cond bool, msg string) RecordInterface {
+	if !cond {
+		return &r
+	}
+	return r.Comment(msg)
+}

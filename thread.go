@@ -16,51 +16,27 @@ func (t Thread) GetID() uint32 {
 }
 
 func (t Thread) Debug(msg string) RecordInterface {
-	r := t.newRecord(LevelDebug, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.Trace(LevelDebug, msg)
 }
 
 func (t Thread) Info(msg string) RecordInterface {
-	r := t.newRecord(LevelInfo, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.Trace(LevelInfo, msg)
 }
 
 func (t Thread) Warn(msg string) RecordInterface {
-	r := t.newRecord(LevelWarn, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.Trace(LevelWarn, msg)
 }
 
 func (t Thread) Error(msg string) RecordInterface {
-	r := t.newRecord(LevelError, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.Trace(LevelError, msg)
 }
 
 func (t Thread) Fatal(msg string) RecordInterface {
-	r := t.newRecord(LevelFatal, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.Trace(LevelFatal, msg)
 }
 
 func (t Thread) Assert(msg string) RecordInterface {
-	r := t.newRecord(LevelAssert, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.Trace(LevelAssert, msg)
 }
 
 func (t Thread) Trace(mask Level, msg string) RecordInterface {
@@ -72,69 +48,27 @@ func (t Thread) Trace(mask Level, msg string) RecordInterface {
 }
 
 func (t Thread) DebugIf(cond bool, msg string) RecordInterface {
-	if !cond {
-		return DummyRecord{}
-	}
-	r := t.newRecord(LevelDebug, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.TraceIf(cond, LevelDebug, msg)
 }
 
 func (t Thread) InfoIf(cond bool, msg string) RecordInterface {
-	if !cond {
-		return DummyRecord{}
-	}
-	r := t.newRecord(LevelInfo, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.TraceIf(cond, LevelInfo, msg)
 }
 
 func (t Thread) WarnIf(cond bool, msg string) RecordInterface {
-	if !cond {
-		return DummyRecord{}
-	}
-	r := t.newRecord(LevelWarn, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.TraceIf(cond, LevelWarn, msg)
 }
 
 func (t Thread) ErrorIf(cond bool, msg string) RecordInterface {
-	if !cond {
-		return DummyRecord{}
-	}
-	r := t.newRecord(LevelError, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.TraceIf(cond, LevelError, msg)
 }
 
 func (t Thread) FatalIf(cond bool, msg string) RecordInterface {
-	if !cond {
-		return DummyRecord{}
-	}
-	r := t.newRecord(LevelFatal, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.TraceIf(cond, LevelFatal, msg)
 }
 
 func (t Thread) AssertIf(cond bool, msg string) RecordInterface {
-	if !cond {
-		return DummyRecord{}
-	}
-	r := t.newRecord(LevelAssert, msg)
-	if r == nil {
-		return DummyRecord{}
-	}
-	return r
+	return t.TraceIf(cond, LevelAssert, msg)
 }
 
 func (t Thread) TraceIf(cond bool, mask Level, msg string) RecordInterface {

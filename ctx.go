@@ -136,11 +136,7 @@ func (c *Ctx) TraceIf(cond bool, mask Level, msg string) RecordInterface {
 	if !cond {
 		return DummyRecord{}
 	}
-	level := c.lmask & mask
-	if level > 0 {
-		return c.record(level, msg)
-	}
-	return DummyRecord{}
+	return c.Trace(mask, msg)
 }
 
 func (c *Ctx) record(level Level, msg string) *Record {

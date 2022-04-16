@@ -50,11 +50,11 @@ func (e EntryType) String() string {
 	case EntryLog:
 		return "LOG"
 	case EntryChapter:
-		return "CHAPTER"
+		return "CHAP"
 	case EntryAcquireThread:
-		return "THREAD_ACQ"
+		return "TH_ACQ"
 	case EntryReleaseThread:
-		return "THREAD_REL"
+		return "TH_REL"
 	default:
 		return "UNK"
 	}

@@ -229,7 +229,7 @@ func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind
 }
 
 func (c *Ctx) flushDL() {
-	for i := 0; i < len(c.dlb); i++ {
+	for i := 0; i < c.dlbc; i++ {
 		e := &c.dlb[i]
 		var (
 			m   Marshaller
@@ -245,8 +245,9 @@ func (c *Ctx) flushDL() {
 			}
 		}
 		c.logLF(e.ll, e.k, e.v, m, ind, e.tp, e.tid, e.rid)
+		e.reset()
 	}
-	c.dlb = c.dlb[:0]
+	c.dlbc = 0
 }
 
 func (c *Ctx) IsDummy() bool {

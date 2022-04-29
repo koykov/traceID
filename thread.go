@@ -103,7 +103,7 @@ func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	if ctx == nil {
 		return &t
 	}
-	ctx.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, t.id, 0)
+	ctx.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, t.id, ctx.nextRID())
 	return &t
 }
 

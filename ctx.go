@@ -274,19 +274,19 @@ func (c *Ctx) Flush() (err error) {
 
 func (c *Ctx) AcquireThread() ThreadInterface {
 	t := c.newThread(0)
-	c.log(LevelDebug, "", t.id, nil, false, EntryAcquireThread, 0, 0)
+	c.log(LevelDebug, "", t.id, nil, false, EntryAcquireThread, 0, c.nextRID())
 	return t
 }
 
 func (c *Ctx) AcquireThreadID(id uint32) ThreadInterface {
 	t := c.newThread(0)
 	t.SetID(id)
-	c.log(LevelDebug, "", t.id, nil, false, EntryAcquireThread, 0, 0)
+	c.log(LevelDebug, "", t.id, nil, false, EntryAcquireThread, 0, c.nextRID())
 	return t
 }
 
 func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
-	c.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, 0, 0)
+	c.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, 0, c.nextRID())
 	return c
 }
 
@@ -323,13 +323,17 @@ func (c *Ctx) newThread(root uint32) *Thread {
 }
 
 func (c *Ctx) newRecord(thid uint32) *Record {
-	id := atomic.AddUint32(&c.rc, 1)
+	id := c.nextRID()
 	r := &Record{
 		ctxHeir: ctxHeir{cp: uintptr(unsafe.Pointer(c))},
-		id:      id - 1,
+		id:      id,
 		thid:    thid,
 	}
 	return r
+}
+
+func (c *Ctx) nextRID() uint32 {
+	return atomic.AddUint32(&c.rc, 1) - 1
 }
 
 func (c *Ctx) getm(m Marshaller) Marshaller {

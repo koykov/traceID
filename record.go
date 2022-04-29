@@ -64,7 +64,7 @@ func (r Record) Err(err error) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
-	r.dp = ctx.dlog(LevelDebug, "", err.Error(), EntryLog, r.thid, r.id)
+	r.dp = ctx.dlog(LevelDebug, "error", err.Error(), EntryLog, r.thid, r.id)
 	return &r
 }
 
@@ -80,7 +80,7 @@ func (r Record) Comment(msg string) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
-	r.dp = ctx.dlog(LevelComment, "", msg, EntryLog, r.thid, r.id)
+	r.dp = ctx.dlog(LevelComment, "comment", msg, EntryLog, r.thid, r.id)
 	return &r
 }
 

@@ -104,4 +104,26 @@ func (l Level) String() string {
 	}
 }
 
+func (l Level) First() Level {
+	if l&LevelDebug > 0 {
+		return LevelDebug
+	}
+	if l&LevelInfo > 0 {
+		return LevelInfo
+	}
+	if l&LevelWarn > 0 {
+		return LevelWarn
+	}
+	if l&LevelError > 0 {
+		return LevelError
+	}
+	if l&LevelFatal > 0 {
+		return LevelFatal
+	}
+	if l&LevelAssert > 0 {
+		return LevelAssert
+	}
+	return l
+}
+
 var _ = FlagOverwrite

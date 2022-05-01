@@ -202,16 +202,15 @@ func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind
 
 	off = len(c.buf)
 	var v Entry64
-	c.bb.Reset()
-	if typ == EntryLog {
+
+	var err error
+	if c.buf, err = x2bytes.ToBytes(c.buf, val); err == nil {
+		v.Encode(uint32(off), uint32(len(c.buf)))
+	} else {
+		c.bb.Reset()
 		if vb, err := c.getm(m).Marshal(&c.bb, val, ind); err == nil {
 			c.buf = append(c.buf, vb...)
 			v.Encode(uint32(off), uint32(off+len(vb)))
-		}
-	} else {
-		var err error
-		if c.buf, err = x2bytes.ToBytes(c.buf, val); err == nil {
-			v.Encode(uint32(off), uint32(len(c.buf)))
 		}
 	}
 

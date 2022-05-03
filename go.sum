@@ -10,3 +10,5 @@ github.com/koykov/indirect v0.0.0-20220403200712-f40904459e17 h1:K9ITvibI9twy8SM
 github.com/koykov/indirect v0.0.0-20220403200712-f40904459e17/go.mod h1:2qWC0hrIHIexlKaqPA0VWEa0s2V/qxxNJv7XPncnh2I=
 github.com/koykov/x2bytes v0.0.0-20211030173929-204cb7cc5e84 h1:63PXDfdREZrUYLsuYfdeNvZcMawd51C5U/iONVd4L5M=
 github.com/koykov/x2bytes v0.0.0-20211030173929-204cb7cc5e84/go.mod h1:WYC0GA70RW4XAE3FRTVCYmC8UhHO3LEm26g795qn7Jo=
+github.com/pebbe/zmq4 v1.2.8 h1:sBO89w+czJZfpZaVu2suYdh2IBXCxPKiL/pX7r6gZog=
+github.com/pebbe/zmq4 v1.2.8/go.mod h1:nqnPueOapVhE2wItZ0uOErngczsJdLOGkebMxaO8r48=

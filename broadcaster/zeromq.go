@@ -55,11 +55,11 @@ func (b *ZeroMQ) Broadcast(ctx context.Context, p []byte) (n int, err error) {
 			for {
 				select {
 				case <-ctx.Done():
+					close(b.stream)
 					return
 				case p := <-b.stream:
 					_, _ = zsk.SendBytes(b.topic, zmq4.SNDMORE)
 					_, _ = zsk.SendBytes(p, 0)
-					_ = p
 				}
 			}
 		}()

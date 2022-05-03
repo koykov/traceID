@@ -14,20 +14,19 @@ const (
 
 type ZeroMQ struct {
 	listener
-	Addr  string
-	HWM   int
-	Topic string
+	hwm   int
+	topic string
 }
 
 func (l *ZeroMQ) SetConfig(conf *traceID.ListenerConfig) {
 	l.listener.SetConfig(conf)
-	l.HWM = int(conf.BufSize)
-	l.Topic = conf.Path
+	l.hwm = int(conf.BufSize)
+	l.topic = conf.Path
 }
 
 func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {
-	if len(l.Topic) == 0 {
-		l.Topic = zmqDefaultTopic
+	if len(l.topic) == 0 {
+		l.topic = zmqDefaultTopic
 	}
 
 	var (
@@ -40,16 +39,16 @@ func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {
 	if zsk, err = ztx.NewSocket(zmq4.SUB); err != nil {
 		return
 	}
-	if l.HWM == 0 {
-		l.HWM = zmqDefaultHWM
+	if l.hwm == 0 {
+		l.hwm = zmqDefaultHWM
 	}
-	if err = zsk.SetSndhwm(l.HWM); err != nil {
+	if err = zsk.SetSndhwm(l.hwm); err != nil {
 		return
 	}
-	if err = zsk.Connect(l.Addr); err != nil {
+	if err = zsk.Connect(l.conf.Addr); err != nil {
 		return
 	}
-	if err = zsk.SetSubscribe(l.Topic); err != nil {
+	if err = zsk.SetSubscribe(l.topic); err != nil {
 		return
 	}
 

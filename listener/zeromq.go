@@ -3,6 +3,7 @@ package listener
 import (
 	"context"
 
+	"github.com/koykov/traceID"
 	"github.com/pebbe/zmq4"
 )
 
@@ -12,9 +13,16 @@ const (
 )
 
 type ZeroMQ struct {
+	listener
 	Addr  string
 	HWM   int
 	Topic string
+}
+
+func (l *ZeroMQ) SetConfig(conf *traceID.ListenerConfig) {
+	l.listener.SetConfig(conf)
+	l.HWM = int(conf.BufSize)
+	l.Topic = conf.Path
 }
 
 func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {

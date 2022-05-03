@@ -55,6 +55,7 @@ func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {
 	for {
 		select {
 		case <-ctx.Done():
+			_ = zsk.Close()
 			return
 		default:
 			if _, err = zsk.RecvBytes(0); err != nil {

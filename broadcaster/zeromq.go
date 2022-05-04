@@ -17,52 +17,35 @@ type ZeroMQ struct {
 	HWM   int
 	Topic string
 
-	once   sync.Once
-	topic  []byte
-	stream chan []byte
-	err    error
+	once  sync.Once
+	ctx   *zmq4.Context
+	sock  *zmq4.Socket
+	topic []byte
+	err   error
 }
 
-func (b *ZeroMQ) Broadcast(ctx context.Context, p []byte) (n int, err error) {
+func (b *ZeroMQ) Broadcast(_ context.Context, p []byte) (n int, err error) {
 	b.once.Do(func() {
 		if len(b.Topic) == 0 {
 			b.Topic = zmqDefaultTopic
 		}
 		b.topic = []byte(b.Topic)
 
-		var (
-			ztx *zmq4.Context
-			zsk *zmq4.Socket
-		)
-		if ztx, b.err = zmq4.NewContext(); b.err != nil {
+		if b.ctx, b.err = zmq4.NewContext(); b.err != nil {
 			return
 		}
-		if zsk, b.err = ztx.NewSocket(zmq4.PUB); b.err != nil {
+		if b.sock, b.err = b.ctx.NewSocket(zmq4.PUB); b.err != nil {
 			return
 		}
 		if b.HWM == 0 {
 			b.HWM = zmqDefaultHWM
 		}
-		if b.err = zsk.SetSndhwm(b.HWM); b.err != nil {
+		if b.err = b.sock.SetSndhwm(b.HWM); b.err != nil {
 			return
 		}
-		if b.err = zsk.Connect(b.Addr); b.err != nil {
+		if b.err = b.sock.Connect(b.Addr); b.err != nil {
 			return
 		}
-
-		b.stream = make(chan []byte)
-		go func() {
-			for {
-				select {
-				case <-ctx.Done():
-					close(b.stream)
-					return
-				case p := <-b.stream:
-					_, _ = zsk.SendBytes(b.topic, zmq4.SNDMORE)
-					_, _ = zsk.SendBytes(p, 0)
-				}
-			}
-		}()
 	})
 
 	if b.err != nil {
@@ -70,7 +53,14 @@ func (b *ZeroMQ) Broadcast(ctx context.Context, p []byte) (n int, err error) {
 		return
 	}
 
-	b.stream <- p
+	if n, err = b.sock.SendBytes(b.topic, zmq4.SNDMORE); err != nil {
+		return
+	}
+	var n1 int
+	if n1, err = b.sock.SendBytes(p, 0); err != nil {
+		return
+	}
+	n += n1
 
 	return
 }

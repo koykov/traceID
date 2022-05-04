@@ -7,26 +7,13 @@ import (
 	"github.com/pebbe/zmq4"
 )
 
-const (
-	zmqDefaultTopic = "traceq"
-	zmqDefaultHWM   = 1000
-)
-
 type ZeroMQ struct {
-	listener
-	hwm   int
-	topic string
-}
-
-func (l *ZeroMQ) SetConfig(conf *traceID.ListenerConfig) {
-	l.listener.SetConfig(conf)
-	l.hwm = int(conf.BufSize)
-	l.topic = conf.Path
+	base
 }
 
 func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {
-	if len(l.topic) == 0 {
-		l.topic = zmqDefaultTopic
+	if len(l.conf.Topic) == 0 {
+		l.conf.Topic = traceID.DefaultZeroMQTopic
 	}
 
 	var (
@@ -39,16 +26,16 @@ func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {
 	if zsk, err = ztx.NewSocket(zmq4.SUB); err != nil {
 		return
 	}
-	if l.hwm == 0 {
-		l.hwm = zmqDefaultHWM
+	if l.conf.HWM == 0 {
+		l.conf.HWM = traceID.DefaultZeroMQHWM
 	}
-	if err = zsk.SetSndhwm(l.hwm); err != nil {
+	if err = zsk.SetSndhwm(int(l.conf.HWM)); err != nil {
 		return
 	}
 	if err = zsk.Connect(l.conf.Addr); err != nil {
 		return
 	}
-	if err = zsk.SetSubscribe(l.topic); err != nil {
+	if err = zsk.SetSubscribe(l.conf.Topic); err != nil {
 		return
 	}
 

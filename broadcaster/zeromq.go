@@ -4,19 +4,12 @@ import (
 	"context"
 	"sync"
 
+	"github.com/koykov/traceID"
 	"github.com/pebbe/zmq4"
 )
 
-const (
-	zmqDefaultTopic = "traceq"
-	zmqDefaultHWM   = 1000
-)
-
 type ZeroMQ struct {
-	Addr  string
-	HWM   int
-	Topic string
-
+	base
 	once  sync.Once
 	ctx   *zmq4.Context
 	sock  *zmq4.Socket
@@ -26,10 +19,10 @@ type ZeroMQ struct {
 
 func (b *ZeroMQ) Broadcast(_ context.Context, p []byte) (n int, err error) {
 	b.once.Do(func() {
-		if len(b.Topic) == 0 {
-			b.Topic = zmqDefaultTopic
+		if len(b.conf.Topic) == 0 {
+			b.conf.Topic = traceID.DefaultZeroMQTopic
 		}
-		b.topic = []byte(b.Topic)
+		b.topic = []byte(b.conf.Topic)
 
 		if b.ctx, b.err = zmq4.NewContext(); b.err != nil {
 			return
@@ -37,13 +30,13 @@ func (b *ZeroMQ) Broadcast(_ context.Context, p []byte) (n int, err error) {
 		if b.sock, b.err = b.ctx.NewSocket(zmq4.PUB); b.err != nil {
 			return
 		}
-		if b.HWM == 0 {
-			b.HWM = zmqDefaultHWM
+		if b.conf.HWM == 0 {
+			b.conf.HWM = traceID.DefaultZeroMQHWM
 		}
-		if b.err = b.sock.SetSndhwm(b.HWM); b.err != nil {
+		if b.err = b.sock.SetSndhwm(int(b.conf.HWM)); b.err != nil {
 			return
 		}
-		if b.err = b.sock.Connect(b.Addr); b.err != nil {
+		if b.err = b.sock.Connect(b.conf.Addr); b.err != nil {
 			return
 		}
 	})

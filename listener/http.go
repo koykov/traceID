@@ -8,7 +8,7 @@ import (
 )
 
 type HTTP struct {
-	listener
+	base
 	srv *http.Server
 }
 

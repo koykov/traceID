@@ -7,7 +7,16 @@ import (
 )
 
 type Broadcaster interface {
+	SetConfig(config *BroadcasterConfig)
 	Broadcast(context.Context, []byte) (int, error)
+}
+
+type BroadcasterConfig struct {
+	Handler string `json:"handler"`
+	Addr    string `json:"addr"`
+	Path    string `json:"path,omitempty'"`
+	HWM     uint   `json:"hwm,omitempty"`
+	Topic   string `json:"topic,omitempty"`
 }
 
 var (

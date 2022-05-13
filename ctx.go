@@ -363,7 +363,7 @@ func (c *Ctx) size() (sz int) {
 	sz += 2                                       // Service length
 	sz += len(c.svc)                              // Service body
 	sz += 2                                       // Stage length
-	sz += len(c.svc)                              // Stage body
+	sz += len(c.stg)                              // Stage body
 	sz += 2                                       // Entries count
 	sz += len(c.lb) * (1 + 1 + 8 + 4 + 4 + 8 + 8) // Entry log level + type + timestamp + threadID + recordID + name + value
 	sz += 4                                       // Payload length

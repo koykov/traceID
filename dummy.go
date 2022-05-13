@@ -80,6 +80,7 @@ func (r DummyRecord) Flush() error                                    { return n
 
 type DummyBroadcast struct{}
 
+func (d DummyBroadcast) SetConfig(*BroadcasterConfig)                   {}
 func (d DummyBroadcast) Broadcast(context.Context, []byte) (int, error) { return 0, nil }
 
 type DummyListener struct{}

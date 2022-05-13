@@ -116,7 +116,7 @@ func Decode(p []byte, x *Message) error {
 	}
 	off += 2
 	for i := 0; i < int(l); i++ {
-		if len(p[off:]) < 30 {
+		if len(p[off:]) < 34 {
 			return ErrPacketTooShort
 		}
 		ll := Level(p[off])

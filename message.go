@@ -20,6 +20,7 @@ type Message struct {
 	Version uint16
 	ID      string
 	Service string
+	Stage   string
 	Rows    []MessageRow
 	Buf     []byte
 }

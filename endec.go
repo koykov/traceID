@@ -29,6 +29,10 @@ func Encode(ctx *Ctx) []byte {
 	off += 2
 	copy(buf[off:], ctx.svc)
 	off += len(ctx.svc)
+	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.stg)))
+	off += 2
+	copy(buf[off:], ctx.stg)
+	off += len(ctx.stg)
 	binary.LittleEndian.PutUint16(buf[off:], uint16(len(ctx.lb)))
 	off += 2
 	for i := 0; i < len(ctx.lb); i++ {
@@ -92,6 +96,18 @@ func Decode(p []byte, x *Message) error {
 	}
 	x.Service = fastconv.B2S(p[off : off+int(l)])
 	off += int(l)
+
+	if len(p[off:]) < 2 {
+		return ErrPacketTooShort
+	}
+	l = binary.LittleEndian.Uint16(p[off:])
+	off += 2
+	if l >= uint16(len(p[off:])) {
+		return ErrPacketTooShort
+	}
+	x.Stage = fastconv.B2S(p[off : off+int(l)])
+	off += int(l)
+
 	if len(p[off:]) < 2 {
 		return ErrPacketTooShort
 	}

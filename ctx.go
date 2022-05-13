@@ -14,8 +14,8 @@ import (
 )
 
 type Ctx struct {
-	id, svc string
-	lmask   Level
+	id, svc, stg string
+	lmask        Level
 
 	bit  bitset.Bitset
 	bto  time.Duration
@@ -44,6 +44,15 @@ func (c *Ctx) SetID(id string) CtxInterface {
 
 func (c *Ctx) SetService(svc string) CtxInterface {
 	c.svc = svc
+	return c
+}
+
+func (c *Ctx) SetServiceWithStage(svc, stage string) CtxInterface {
+	return c.SetService(svc).SetStage(stage)
+}
+
+func (c *Ctx) SetStage(stage string) CtxInterface {
+	c.stg = stage
 	return c
 }
 
@@ -290,6 +299,7 @@ func (c *Ctx) ReleaseThread(thread ThreadInterface) CtxInterface {
 }
 
 func (c *Ctx) Reset() *Ctx {
+	c.id, c.svc, c.stg = "", "", ""
 	c.lmask = LevelAll
 	c.bit = 0
 	c.bto = 0
@@ -352,6 +362,8 @@ func (c *Ctx) size() (sz int) {
 	sz += len(c.id)                               // ID body
 	sz += 2                                       // Service length
 	sz += len(c.svc)                              // Service body
+	sz += 2                                       // Stage length
+	sz += len(c.svc)                              // Stage body
 	sz += 2                                       // Entries count
 	sz += len(c.lb) * (1 + 1 + 8 + 4 + 4 + 8 + 8) // Entry log level + type + timestamp + threadID + recordID + name + value
 	sz += 4                                       // Payload length

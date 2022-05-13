@@ -23,6 +23,8 @@ const (
 type CtxInterface interface {
 	SetID(string) CtxInterface
 	SetService(string) CtxInterface
+	SetServiceWithStage(string, string) CtxInterface
+	SetStage(string) CtxInterface
 	SetFlag(Flag, bool) CtxInterface
 	Watch(Level) CtxInterface
 	SetBroadcastTimeout(time.Duration) CtxInterface

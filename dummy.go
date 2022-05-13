@@ -13,33 +13,35 @@ func (d DummyClock) Now() time.Time {
 
 type DummyCtx struct{}
 
-func (d DummyCtx) SetID(string) CtxInterface                      { return d }
-func (d DummyCtx) SetService(string) CtxInterface                 { return d }
-func (d DummyCtx) SetFlag(Flag, bool) CtxInterface                { return d }
-func (d DummyCtx) Watch(Level) CtxInterface                       { return d }
-func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface { return d }
-func (d DummyCtx) SetClock(Clock) CtxInterface                    { return d }
-func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface          { return d }
-func (d DummyCtx) SetLogger(Logger) CtxInterface                  { return d }
-func (d DummyCtx) AcquireThread() ThreadInterface                 { return DummyThread{} }
-func (d DummyCtx) AcquireThreadID(uint32) ThreadInterface         { return DummyThread{} }
-func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface     { return d }
-func (d DummyCtx) Debug(string) RecordInterface                   { return DummyRecord{} }
-func (d DummyCtx) Info(string) RecordInterface                    { return DummyRecord{} }
-func (d DummyCtx) Warn(string) RecordInterface                    { return DummyRecord{} }
-func (d DummyCtx) Error(string) RecordInterface                   { return DummyRecord{} }
-func (d DummyCtx) Fatal(string) RecordInterface                   { return DummyRecord{} }
-func (d DummyCtx) Assert(string) RecordInterface                  { return DummyRecord{} }
-func (d DummyCtx) Trace(Level, string) RecordInterface            { return DummyRecord{} }
-func (d DummyCtx) DebugIf(bool, string) RecordInterface           { return DummyRecord{} }
-func (d DummyCtx) InfoIf(bool, string) RecordInterface            { return DummyRecord{} }
-func (d DummyCtx) WarnIf(bool, string) RecordInterface            { return DummyRecord{} }
-func (d DummyCtx) ErrorIf(bool, string) RecordInterface           { return DummyRecord{} }
-func (d DummyCtx) FatalIf(bool, string) RecordInterface           { return DummyRecord{} }
-func (d DummyCtx) AssertIf(bool, string) RecordInterface          { return DummyRecord{} }
-func (d DummyCtx) TraceIf(bool, Level, string) RecordInterface    { return DummyRecord{} }
-func (d DummyCtx) IsDummy() bool                                  { return true }
-func (d DummyCtx) Flush() error                                   { return nil }
+func (d DummyCtx) SetID(string) CtxInterface                       { return d }
+func (d DummyCtx) SetService(string) CtxInterface                  { return d }
+func (d DummyCtx) SetServiceWithStage(string, string) CtxInterface { return d }
+func (d DummyCtx) SetStage(string) CtxInterface                    { return d }
+func (d DummyCtx) SetFlag(Flag, bool) CtxInterface                 { return d }
+func (d DummyCtx) Watch(Level) CtxInterface                        { return d }
+func (d DummyCtx) SetBroadcastTimeout(time.Duration) CtxInterface  { return d }
+func (d DummyCtx) SetClock(Clock) CtxInterface                     { return d }
+func (d DummyCtx) SetMarshaller(Marshaller) CtxInterface           { return d }
+func (d DummyCtx) SetLogger(Logger) CtxInterface                   { return d }
+func (d DummyCtx) AcquireThread() ThreadInterface                  { return DummyThread{} }
+func (d DummyCtx) AcquireThreadID(uint32) ThreadInterface          { return DummyThread{} }
+func (d DummyCtx) ReleaseThread(ThreadInterface) CtxInterface      { return d }
+func (d DummyCtx) Debug(string) RecordInterface                    { return DummyRecord{} }
+func (d DummyCtx) Info(string) RecordInterface                     { return DummyRecord{} }
+func (d DummyCtx) Warn(string) RecordInterface                     { return DummyRecord{} }
+func (d DummyCtx) Error(string) RecordInterface                    { return DummyRecord{} }
+func (d DummyCtx) Fatal(string) RecordInterface                    { return DummyRecord{} }
+func (d DummyCtx) Assert(string) RecordInterface                   { return DummyRecord{} }
+func (d DummyCtx) Trace(Level, string) RecordInterface             { return DummyRecord{} }
+func (d DummyCtx) DebugIf(bool, string) RecordInterface            { return DummyRecord{} }
+func (d DummyCtx) InfoIf(bool, string) RecordInterface             { return DummyRecord{} }
+func (d DummyCtx) WarnIf(bool, string) RecordInterface             { return DummyRecord{} }
+func (d DummyCtx) ErrorIf(bool, string) RecordInterface            { return DummyRecord{} }
+func (d DummyCtx) FatalIf(bool, string) RecordInterface            { return DummyRecord{} }
+func (d DummyCtx) AssertIf(bool, string) RecordInterface           { return DummyRecord{} }
+func (d DummyCtx) TraceIf(bool, Level, string) RecordInterface     { return DummyRecord{} }
+func (d DummyCtx) IsDummy() bool                                   { return true }
+func (d DummyCtx) Flush() error                                    { return nil }
 
 type DummyThread struct{}
 

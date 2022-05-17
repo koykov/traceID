@@ -11,6 +11,7 @@ const (
 	EntryChapter
 	EntryAcquireThread
 	EntryReleaseThread
+	EntryStage
 )
 
 type entry struct {
@@ -55,6 +56,8 @@ func (e EntryType) String() string {
 		return "TH_ACQ"
 	case EntryReleaseThread:
 		return "TH_REL"
+	case EntryStage:
+		return "CH_STG"
 	default:
 		return "UNK"
 	}

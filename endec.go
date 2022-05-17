@@ -10,6 +10,10 @@ import (
 	"github.com/koykov/fastconv"
 )
 
+type BytesContainer interface {
+	Bytes() []byte
+}
+
 func Encode(ctx *Ctx) []byte {
 	ctx.flushDL()
 	poff := len(ctx.buf)

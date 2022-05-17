@@ -2,6 +2,7 @@ package traceID
 
 import (
 	"bytes"
+	"fmt"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -213,7 +214,13 @@ func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind
 	var v Entry64
 
 	var err error
-	if c.buf, err = x2bytes.ToBytes(c.buf, val); err == nil {
+	if s, ok := val.(fmt.Stringer); ok {
+		c.buf = append(c.buf, s.String()...)
+		v.Encode(uint32(off), uint32(len(c.buf)))
+	} else if b, ok := val.(BytesContainer); ok {
+		c.buf = append(c.buf, b.Bytes()...)
+		v.Encode(uint32(off), uint32(len(c.buf)))
+	} else if c.buf, err = x2bytes.ToBytes(c.buf, val); err == nil {
 		v.Encode(uint32(off), uint32(len(c.buf)))
 	} else {
 		c.bb.Reset()

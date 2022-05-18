@@ -14,6 +14,7 @@ func (d DummyClock) Now() time.Time {
 type DummyCtx struct{}
 
 func (d DummyCtx) SetID(string) CtxInterface                       { return d }
+func (d DummyCtx) GetID() string                                   { return "" }
 func (d DummyCtx) SetService(string) CtxInterface                  { return d }
 func (d DummyCtx) SetServiceWithStage(string, string) CtxInterface { return d }
 func (d DummyCtx) SetStage(string) CtxInterface                    { return d }

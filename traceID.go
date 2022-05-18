@@ -22,6 +22,7 @@ const (
 
 type CtxInterface interface {
 	SetID(string) CtxInterface
+	GetID() string
 	SetService(string) CtxInterface
 	SetServiceWithStage(string, string) CtxInterface
 	SetStage(string) CtxInterface

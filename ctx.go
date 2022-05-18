@@ -43,6 +43,10 @@ func (c *Ctx) SetID(id string) CtxInterface {
 	return c
 }
 
+func (c *Ctx) GetID() string {
+	return c.id
+}
+
 func (c *Ctx) SetService(svc string) CtxInterface {
 	c.svc = svc
 	return c

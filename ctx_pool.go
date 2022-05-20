@@ -7,8 +7,9 @@ type CtxPool struct {
 }
 
 var (
-	CP   CtxPool
-	_, _ = AcquireCtx(), ReleaseCtx
+	CP CtxPool
+
+	_, _, _ = AcquireCtx, ReleaseCtx, TryReleaseCtx
 )
 
 func (p *CtxPool) Get() *Ctx {
@@ -32,4 +33,10 @@ func AcquireCtx() *Ctx {
 
 func ReleaseCtx(ctx *Ctx) {
 	CP.Put(ctx)
+}
+
+func TryReleaseCtx(ci CtxInterface) {
+	if ctx, ok := interface{}(ci).(*Ctx); ok {
+		ReleaseCtx(ctx)
+	}
 }

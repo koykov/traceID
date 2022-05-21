@@ -1,8 +1,10 @@
 package listener
 
 import (
+	"bytes"
 	"context"
 
+	"github.com/koykov/fastconv"
 	"github.com/koykov/traceID"
 	"github.com/pebbe/zmq4"
 )
@@ -45,14 +47,21 @@ func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {
 			_ = zsk.Close()
 			return
 		default:
-			if _, err = zsk.RecvBytes(0); err != nil {
-				continue
-			}
 			var p []byte
-			if p, err = zsk.RecvBytes(0); err != nil || len(p) == 0 {
-				continue
+			for {
+				if p, err = zsk.RecvBytes(0); err != nil || len(p) == 0 {
+					continue
+				}
+				if l.isTopic(p) {
+					continue
+				}
+				break
 			}
 			out <- p
 		}
 	}
+}
+
+func (l ZeroMQ) isTopic(p []byte) bool {
+	return bytes.Equal(p, fastconv.S2B(traceID.DefaultZeroMQTopic)) || bytes.Equal(p, fastconv.S2B(traceID.ProtobufZeroMQTopic))
 }

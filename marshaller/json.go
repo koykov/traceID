@@ -18,6 +18,6 @@ func (m JSON) Marshal(rw io.ReadWriter, x interface{}, indent bool) (b []byte, e
 		return
 	}
 	b, err = io.ReadAll(rw)
-	b = bytealg.TrimRight(b, []byte{'\n'})
+	b = bytealg.TrimRight(b, bNl)
 	return
 }

@@ -9,7 +9,7 @@ type CtxPool struct {
 var (
 	CP CtxPool
 
-	_, _, _ = AcquireCtx, ReleaseCtx, TryReleaseCtx
+	_, _, _ = AcquireCtx, ReleaseCtx, AcquireCtxWithID
 )
 
 func (p *CtxPool) Get() *Ctx {
@@ -27,16 +27,23 @@ func (p *CtxPool) Put(ctx *Ctx) {
 	p.p.Put(ctx)
 }
 
-func AcquireCtx() *Ctx {
+func AcquireCtx() CtxInterface {
 	return CP.Get()
 }
 
-func ReleaseCtx(ctx *Ctx) {
-	CP.Put(ctx)
+func AcquireCtxWithID(id string) CtxInterface {
+	if len(id) == 0 {
+		return DummyCtx{}
+	}
+	return AcquireCtx()
 }
 
-func TryReleaseCtx(ci CtxInterface) {
+func ReleaseCtx(ctx CtxInterface) {
+	tryReleaseCtx(ctx)
+}
+
+func tryReleaseCtx(ci CtxInterface) {
 	if ctx, ok := interface{}(ci).(*Ctx); ok {
-		ReleaseCtx(ctx)
+		CP.Put(ctx)
 	}
 }

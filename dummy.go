@@ -11,7 +11,9 @@ func (d DummyClock) Now() time.Time {
 	return time.Unix(123, 456)
 }
 
-type DummyCtx struct{}
+type DummyCtx struct {
+	DummyAssert
+}
 
 func (d DummyCtx) SetID(string) CtxInterface                       { return d }
 func (d DummyCtx) GetID() string                                   { return "" }
@@ -44,7 +46,9 @@ func (d DummyCtx) TraceIf(bool, Level, string) RecordInterface     { return Dumm
 func (d DummyCtx) IsDummy() bool                                   { return true }
 func (d DummyCtx) Flush() error                                    { return nil }
 
-type DummyThread struct{}
+type DummyThread struct {
+	DummyAssert
+}
 
 func (t DummyThread) SetID(uint32) ThreadInterface                  { return t }
 func (t DummyThread) GetID() uint32                                 { return 0 }

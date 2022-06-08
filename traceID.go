@@ -21,6 +21,7 @@ const (
 )
 
 type CtxInterface interface {
+	AssertInterface
 	SetID(string) CtxInterface
 	GetID() string
 	SetService(string) CtxInterface
@@ -54,6 +55,7 @@ type CtxInterface interface {
 }
 
 type ThreadInterface interface {
+	AssertInterface
 	SetID(uint32) ThreadInterface
 	GetID() uint32
 	Debug(string) RecordInterface

@@ -9,9 +9,7 @@ type Marshaller interface {
 	Marshal(io.ReadWriter, interface{}, bool) ([]byte, error)
 }
 
-var (
-	defaultMarshaller = &mfmt{}
-)
+var defaultMarshaller Marshaller
 
 type mfmt struct{}
 
@@ -20,4 +18,12 @@ func (m mfmt) Marshal(rw io.ReadWriter, x interface{}, _ bool) ([]byte, error) {
 		return nil, err
 	}
 	return io.ReadAll(rw)
+}
+
+func init() {
+	SetDefaultMarshaller(mfmt{})
+}
+
+func SetDefaultMarshaller(m Marshaller) {
+	defaultMarshaller = m
 }

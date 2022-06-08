@@ -8,6 +8,7 @@ type Record struct {
 	lp   uintptr
 	dp   uintptr
 	thid uint32
+	with uint8
 }
 
 func (r Record) Slug(slug string) RecordInterface {
@@ -33,18 +34,23 @@ func (r Record) Var(name string, val interface{}) RecordInterface {
 	if ctx == nil {
 		return &r
 	}
+	r.with = 0
 	r.dp = ctx.dlog(LevelDebug, name, val, EntryLog, r.thid, r.id)
 	return &r
 }
 
-func (r Record) VarIf(cond bool, name string, val interface{}) RecordInterface {
+func (r *Record) VarIf(cond bool, name string, val interface{}) RecordInterface {
 	if !cond {
-		return &r
+		r.with = 1
+		return r
 	}
 	return r.Var(name, val)
 }
 
 func (r Record) With(name Option, value interface{}) RecordInterface {
+	if r.with != 0 {
+		return &r
+	}
 	ctx := r.indirectCtx()
 	if ctx == nil {
 		return &r
@@ -68,8 +74,9 @@ func (r Record) Err(err error) RecordInterface {
 	return &r
 }
 
-func (r Record) ErrIf(cond bool, err error) RecordInterface {
+func (r *Record) ErrIf(cond bool, err error) RecordInterface {
 	if !cond {
+		r.with = 1
 		return r
 	}
 	return r.Err(err)

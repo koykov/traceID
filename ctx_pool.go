@@ -35,7 +35,9 @@ func AcquireCtxWithID(id string) CtxInterface {
 	if len(id) == 0 {
 		return DummyCtx{}
 	}
-	return AcquireCtx()
+	ctx := AcquireCtx()
+	ctx.SetID(id)
+	return ctx
 }
 
 func ReleaseCtx(ctx CtxInterface) {

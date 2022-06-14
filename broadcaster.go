@@ -8,6 +8,7 @@ import (
 
 type Broadcaster interface {
 	SetConfig(config *BroadcasterConfig)
+	GetConfig() *BroadcasterConfig
 	Broadcast(context.Context, []byte) (int, error)
 }
 

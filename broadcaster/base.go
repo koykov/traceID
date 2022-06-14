@@ -9,3 +9,7 @@ type Base struct {
 func (b *Base) SetConfig(conf *traceID.BroadcasterConfig) {
 	b.conf = conf
 }
+
+func (b Base) GetConfig() *traceID.BroadcasterConfig {
+	return b.conf
+}

@@ -8,7 +8,7 @@ import (
 )
 
 type HTTP struct {
-	base
+	Base
 	mux sync.Mutex
 	buf bytes.Buffer
 }

@@ -9,7 +9,7 @@ import (
 )
 
 type ZeroMQ struct {
-	base
+	Base
 	once  sync.Once
 	ctx   *zmq4.Context
 	sock  *zmq4.Socket

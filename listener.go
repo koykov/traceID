@@ -4,6 +4,7 @@ import "context"
 
 type Listener interface {
 	SetConfig(*ListenerConfig)
+	GetConfig() *ListenerConfig
 	Listen(context.Context, chan []byte) error
 }
 

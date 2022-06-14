@@ -10,7 +10,7 @@ import (
 )
 
 type ZeroMQ struct {
-	base
+	Base
 }
 
 func (l ZeroMQ) Listen(ctx context.Context, out chan []byte) (err error) {

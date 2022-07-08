@@ -17,6 +17,7 @@ type BroadcasterConfig struct {
 	Addr    string `json:"addr"`
 	Path    string `json:"path,omitempty'"`
 	HWM     uint   `json:"hwm,omitempty"`
+	Ping    uint   `json:"ping,omitempty"`
 	Topic   string `json:"topic,omitempty"`
 }
 

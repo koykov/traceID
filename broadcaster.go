@@ -13,12 +13,13 @@ type Broadcaster interface {
 }
 
 type BroadcasterConfig struct {
-	Handler string `json:"handler"`
-	Addr    string `json:"addr"`
-	Path    string `json:"path,omitempty'"`
-	HWM     uint   `json:"hwm,omitempty"`
-	Ping    uint   `json:"ping,omitempty"`
-	Topic   string `json:"topic,omitempty"`
+	Handler   string        `json:"handler"`
+	Addr      string        `json:"addr"`
+	Path      string        `json:"path,omitempty'"`
+	HWM       uint          `json:"hwm,omitempty"`
+	Ping      uint          `json:"ping,omitempty"`
+	PingDelay time.Duration `json:"pingDelay,omitempty"`
+	Topic     string        `json:"topic,omitempty"`
 }
 
 var (

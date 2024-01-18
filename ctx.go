@@ -9,8 +9,8 @@ import (
 	"unsafe"
 
 	"github.com/koykov/bitset"
+	"github.com/koykov/byteconv"
 	. "github.com/koykov/entry"
-	"github.com/koykov/fastconv"
 	"github.com/koykov/x2bytes"
 )
 
@@ -256,7 +256,7 @@ func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind
 	})
 	if c.l != nil {
 		c.l.Printf("[%s/%s] thread %d; record %d; key '%s'; %s\n",
-			level.String(), typ.String(), tid, rid, name, fastconv.B2S(c.buf[off:]))
+			level.String(), typ.String(), tid, rid, name, byteconv.B2S(c.buf[off:]))
 	}
 	return uintptr(unsafe.Pointer(&c.lb[len(c.lb)-1]))
 }

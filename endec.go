@@ -6,8 +6,8 @@ import (
 
 	"github.com/koykov/bitset"
 	"github.com/koykov/bytealg"
+	"github.com/koykov/byteconv"
 	. "github.com/koykov/entry"
-	"github.com/koykov/fastconv"
 )
 
 func Encode(ctx *Ctx) []byte {
@@ -79,7 +79,7 @@ func Decode(p []byte, x *Message) error {
 	if l >= uint16(len(p[off:])) {
 		return ErrPacketTooShort
 	}
-	x.ID = fastconv.B2S(p[off : off+int(l)])
+	x.ID = byteconv.B2S(p[off : off+int(l)])
 	off += int(l)
 
 	if len(p[off:]) < 2 {
@@ -90,7 +90,7 @@ func Decode(p []byte, x *Message) error {
 	if l >= uint16(len(p[off:])) {
 		return ErrPacketTooShort
 	}
-	x.Service = fastconv.B2S(p[off : off+int(l)])
+	x.Service = byteconv.B2S(p[off : off+int(l)])
 	off += int(l)
 
 	if len(p[off:]) < 2 {

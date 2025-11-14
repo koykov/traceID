@@ -59,43 +59,43 @@ func (c *Ctx) FatalAssertIf(cond bool, msg string) RecordInterface {
 
 // thread group
 
-func (t Thread) DebugAssert(msg string) RecordInterface {
+func (t *Thread) DebugAssert(msg string) RecordInterface {
 	return t.Trace(LevelDebug|LevelAssert, msg)
 }
 
-func (t Thread) InfoAssert(msg string) RecordInterface {
+func (t *Thread) InfoAssert(msg string) RecordInterface {
 	return t.Trace(LevelInfo|LevelAssert, msg)
 }
 
-func (t Thread) WarnAssert(msg string) RecordInterface {
+func (t *Thread) WarnAssert(msg string) RecordInterface {
 	return t.Trace(LevelWarn|LevelAssert, msg)
 }
 
-func (t Thread) ErrorAssert(msg string) RecordInterface {
+func (t *Thread) ErrorAssert(msg string) RecordInterface {
 	return t.Trace(LevelError|LevelAssert, msg)
 }
 
-func (t Thread) FatalAssert(msg string) RecordInterface {
+func (t *Thread) FatalAssert(msg string) RecordInterface {
 	return t.Trace(LevelFatal|LevelAssert, msg)
 }
 
-func (t Thread) DebugAssertIf(cond bool, msg string) RecordInterface {
+func (t *Thread) DebugAssertIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelDebug|LevelAssert, msg)
 }
 
-func (t Thread) InfoAssertIf(cond bool, msg string) RecordInterface {
+func (t *Thread) InfoAssertIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelInfo|LevelAssert, msg)
 }
 
-func (t Thread) WarnAssertIf(cond bool, msg string) RecordInterface {
+func (t *Thread) WarnAssertIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelWarn|LevelAssert, msg)
 }
 
-func (t Thread) ErrorAssertIf(cond bool, msg string) RecordInterface {
+func (t *Thread) ErrorAssertIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelError|LevelAssert, msg)
 }
 
-func (t Thread) FatalAssertIf(cond bool, msg string) RecordInterface {
+func (t *Thread) FatalAssertIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelFatal|LevelAssert, msg)
 }
 

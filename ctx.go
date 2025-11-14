@@ -10,7 +10,7 @@ import (
 
 	"github.com/koykov/bitset"
 	"github.com/koykov/byteconv"
-	. "github.com/koykov/entry"
+	ent "github.com/koykov/entry"
 	"github.com/koykov/x2bytes"
 )
 
@@ -208,14 +208,14 @@ func (c *Ctx) log(level Level, name string, val interface{}, m Marshaller, ind b
 
 func (c *Ctx) logLF(level Level, name string, val interface{}, m Marshaller, ind bool, typ EntryType, tid, rid uint32) (lp uintptr) {
 	off := len(c.buf)
-	var k Entry64
+	var k ent.Entry64
 	if l := len(name); l > 0 {
 		c.buf = append(c.buf, name...)
 		k.Encode(uint32(off), uint32(off+l))
 	}
 
 	off = len(c.buf)
-	var v Entry64
+	var v ent.Entry64
 
 	var err error
 	c.bb.Reset()

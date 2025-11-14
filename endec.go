@@ -7,7 +7,7 @@ import (
 	"github.com/koykov/bitset"
 	"github.com/koykov/bytealg"
 	"github.com/koykov/byteconv"
-	. "github.com/koykov/entry"
+	ent "github.com/koykov/entry"
 )
 
 func Encode(ctx *Ctx) []byte {
@@ -124,8 +124,8 @@ func Decode(p []byte, x *Message) error {
 			Time:     int64(tt),
 			ThreadID: tid,
 			RecordID: rid,
-			Key:      Entry64(k),
-			Value:    Entry64(v),
+			Key:      ent.Entry64(k),
+			Value:    ent.Entry64(v),
 		})
 	}
 	if len(p[off:]) < 4 {

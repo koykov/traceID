@@ -21,8 +21,7 @@ func BenchmarkDummy(b *testing.B) {
 		c := DummyClock{}
 		b.ReportAllocs()
 		for i := 0; i < b.N; i++ {
-			var opt testDEQInterface
-			opt = &testDEQ{}
+			var opt testDEQInterface = &testDEQ{}
 			dc := DummyCtx{}
 			dc.SetID("foobar").
 				SetService("server").

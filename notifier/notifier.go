@@ -18,7 +18,7 @@ func (n *notifier) SetConfig(conf *traceID.NotifierConfig) {
 	n.conf = conf
 }
 
-func (n notifier) render(id string) string {
+func (n *notifier) render(id string) string {
 	tpl := defaultTemplate
 	if len(n.conf.Template) > 0 {
 		tpl = n.conf.Template

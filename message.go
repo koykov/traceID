@@ -2,7 +2,7 @@ package traceID
 
 import (
 	"github.com/koykov/bitset"
-	. "github.com/koykov/entry"
+	ent "github.com/koykov/entry"
 )
 
 type MessageRow struct {
@@ -11,8 +11,8 @@ type MessageRow struct {
 	Time     int64
 	ThreadID uint32
 	RecordID uint32
-	Key      Entry64
-	Value    Entry64
+	Key      ent.Entry64
+	Value    ent.Entry64
 }
 
 type Message struct {

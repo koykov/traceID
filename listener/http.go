@@ -32,9 +32,7 @@ func (l HTTP) Listen(ctx context.Context, out chan []byte) (err error) {
 		}
 	}()
 
-	select {
-	case <-ctx.Done():
-		err = l.srv.Shutdown(context.Background())
-	}
+	<-ctx.Done()
+	err = l.srv.Shutdown(context.Background())
 	return
 }

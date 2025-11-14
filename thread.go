@@ -11,35 +11,35 @@ func (t *Thread) SetID(id uint32) ThreadInterface {
 	return t
 }
 
-func (t Thread) GetID() uint32 {
+func (t *Thread) GetID() uint32 {
 	return t.id
 }
 
-func (t Thread) Debug(msg string) RecordInterface {
+func (t *Thread) Debug(msg string) RecordInterface {
 	return t.Trace(LevelDebug, msg)
 }
 
-func (t Thread) Info(msg string) RecordInterface {
+func (t *Thread) Info(msg string) RecordInterface {
 	return t.Trace(LevelInfo, msg)
 }
 
-func (t Thread) Warn(msg string) RecordInterface {
+func (t *Thread) Warn(msg string) RecordInterface {
 	return t.Trace(LevelWarn, msg)
 }
 
-func (t Thread) Error(msg string) RecordInterface {
+func (t *Thread) Error(msg string) RecordInterface {
 	return t.Trace(LevelError, msg)
 }
 
-func (t Thread) Fatal(msg string) RecordInterface {
+func (t *Thread) Fatal(msg string) RecordInterface {
 	return t.Trace(LevelFatal, msg)
 }
 
-func (t Thread) Assert(msg string) RecordInterface {
+func (t *Thread) Assert(msg string) RecordInterface {
 	return t.Trace(LevelAssert, msg)
 }
 
-func (t Thread) Trace(mask Level, msg string) RecordInterface {
+func (t *Thread) Trace(mask Level, msg string) RecordInterface {
 	r := t.newRecord(mask, msg)
 	if r == nil {
 		return DummyRecord{}
@@ -47,31 +47,31 @@ func (t Thread) Trace(mask Level, msg string) RecordInterface {
 	return r
 }
 
-func (t Thread) DebugIf(cond bool, msg string) RecordInterface {
+func (t *Thread) DebugIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelDebug, msg)
 }
 
-func (t Thread) InfoIf(cond bool, msg string) RecordInterface {
+func (t *Thread) InfoIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelInfo, msg)
 }
 
-func (t Thread) WarnIf(cond bool, msg string) RecordInterface {
+func (t *Thread) WarnIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelWarn, msg)
 }
 
-func (t Thread) ErrorIf(cond bool, msg string) RecordInterface {
+func (t *Thread) ErrorIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelError, msg)
 }
 
-func (t Thread) FatalIf(cond bool, msg string) RecordInterface {
+func (t *Thread) FatalIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelFatal, msg)
 }
 
-func (t Thread) AssertIf(cond bool, msg string) RecordInterface {
+func (t *Thread) AssertIf(cond bool, msg string) RecordInterface {
 	return t.TraceIf(cond, LevelAssert, msg)
 }
 
-func (t Thread) TraceIf(cond bool, mask Level, msg string) RecordInterface {
+func (t *Thread) TraceIf(cond bool, mask Level, msg string) RecordInterface {
 	if !cond {
 		return DummyRecord{}
 	}
@@ -82,7 +82,7 @@ func (t Thread) TraceIf(cond bool, mask Level, msg string) RecordInterface {
 	return r
 }
 
-func (t Thread) AcquireThread() ThreadInterface {
+func (t *Thread) AcquireThread() ThreadInterface {
 	ctx := t.indirectCtx()
 	if ctx == nil {
 		return DummyThread{}
@@ -90,7 +90,7 @@ func (t Thread) AcquireThread() ThreadInterface {
 	return ctx.newThread(t.id)
 }
 
-func (t Thread) AcquireThreadID(id uint32) ThreadInterface {
+func (t *Thread) AcquireThreadID(id uint32) ThreadInterface {
 	ctx := t.indirectCtx()
 	if ctx == nil {
 		return DummyThread{}
@@ -98,16 +98,16 @@ func (t Thread) AcquireThreadID(id uint32) ThreadInterface {
 	return ctx.newThread(t.id).SetID(id)
 }
 
-func (t Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
+func (t *Thread) ReleaseThread(thread ThreadInterface) ThreadInterface {
 	ctx := t.indirectCtx()
 	if ctx == nil {
-		return &t
+		return t
 	}
 	ctx.log(LevelDebug, "", thread.GetID(), nil, false, EntryReleaseThread, t.id, ctx.nextRID())
-	return &t
+	return t
 }
 
-func (t Thread) newRecord(mask Level, msg string) *Record {
+func (t *Thread) newRecord(mask Level, msg string) *Record {
 	ctx := t.indirectCtx()
 	if ctx == nil {
 		return nil

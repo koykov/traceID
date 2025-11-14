@@ -10,6 +10,6 @@ func (l *Base) SetConfig(conf *traceID.ListenerConfig) {
 	l.conf = conf
 }
 
-func (l Base) GetConfig() *traceID.ListenerConfig {
+func (l *Base) GetConfig() *traceID.ListenerConfig {
 	return l.conf
 }

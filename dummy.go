@@ -86,9 +86,11 @@ func (r DummyRecord) Flush() error                                    { return n
 type DummyBroadcast struct{}
 
 func (d DummyBroadcast) SetConfig(*BroadcasterConfig)                   {}
+func (d DummyBroadcast) GetConfig() *BroadcasterConfig                  { return nil }
 func (d DummyBroadcast) Broadcast(context.Context, []byte) (int, error) { return 0, nil }
 
 type DummyListener struct{}
 
 func (d DummyListener) SetConfig(*ListenerConfig)                 {}
+func (d DummyListener) GetConfig() *ListenerConfig                { return nil }
 func (d DummyListener) Listen(context.Context, chan []byte) error { return nil }

@@ -1,7 +1,7 @@
 package traceID
 
 import (
-	. "github.com/koykov/entry"
+	ent "github.com/koykov/entry"
 )
 
 type EntryType uint8
@@ -20,7 +20,7 @@ type entry struct {
 	tt   int64
 	tid  uint32
 	rid  uint32
-	k, v Entry64
+	k, v ent.Entry64
 }
 
 // Deferred entry.

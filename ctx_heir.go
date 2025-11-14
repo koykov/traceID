@@ -6,7 +6,7 @@ type ctxHeir struct {
 	cp uintptr
 }
 
-func (h ctxHeir) Flush() (err error) {
+func (h *ctxHeir) Flush() (err error) {
 	ctx := h.indirectCtx()
 	if ctx == nil {
 		err = ErrHomelessThread
@@ -16,11 +16,7 @@ func (h ctxHeir) Flush() (err error) {
 	return
 }
 
-func (h ctxHeir) getCP() uintptr {
-	return h.cp
-}
-
-func (h ctxHeir) indirectCtx() *Ctx {
+func (h *ctxHeir) indirectCtx() *Ctx {
 	if h.cp == 0 {
 		return nil
 	}
